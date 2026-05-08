@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multi-Feature Hub</title>
+    <style>
+        :root { --bg: #121212; --card: #1e1e1e; --primary: #007bff; --text: #e0e0e0; --success: #28a745; --danger: #dc3545; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); margin: 0; display: flex; flex-direction: column; align-items: center; }
+        
+        nav { background: #000; width: 100%; display: flex; justify-content: center; padding: 10px 0; position: sticky; top: 0; z-index: 1000; flex-wrap: wrap; gap: 5px; }
+        nav button { background: #333; color: white; border: none; padding: 8px 12px; cursor: pointer; border-radius: 5px; font-weight: bold; font-size: 0.85rem; }
+        nav button.active { background: var(--primary); }
+
+        .section { display: none; width: 90%; max-width: 850px; margin-top: 20px; background: var(--card); padding: 25px; border-radius: 15px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .section.active { display: block; }
+
+        .controls { display: flex; gap: 10px; margin-bottom: 15px; justify-content: center; flex-wrap: wrap; }
+        input, textarea, select { padding: 10px; border-radius: 5px; border: 1px solid #444; background: #2a2a2a; color: white; }
+        button { padding: 10px 15px; border-radius: 5px; border: none; cursor: pointer; background: var(--primary); color: white; font-weight: bold; }
+        .btn-alt { background: #444; }
+        .btn-save { background: var(--success); }
+
+        /* Drawing Canvas */
+        #canvas { background: white; cursor: crosshair; border-radius: 5px; touch-action: none; border: 2px solid #333; }
+        
+        /* Displays */
+        .big-time { font-size: 3rem; font-family: monospace; margin: 15px 0; color: #ffcc00; }
+        iframe { width: 100%; height: 500px; border: none; background: white; border-radius: 5px; }
+        .wheel-container { position: relative; width: 150px; height: 150px; margin: 15px auto; border: 8px solid #444; border-radius: 50%; background: conic-gradient(red 0% 50%, black 50% 100%); }
+        #rat { font-size: 40px; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); transition: 3s cubic-bezier(0.1, 0, 0.1, 1); }
+    </style>
+</head>
+<body>
+
+<nav>
+    <button onclick="switchTab('tab-preview1', this)" class="active">Web 1</button>
+    <button onclick="switchTab('tab-preview2', this)">Web 2</button>
+    <button onclick="switchTab('tab-draw', this)">Draw</button>
+    <button onclick="switchTab('tab-pass', this)">PassGen</button>
+    <button onclick="switchTab('tab-stopwatch', this)">Stopwatch</button>
+    <button onclick="switchTab('tab-timer', this)">Timer</button>
+    <button onclick="switchTab('tab-notes', this)">Notes</button>
+    <button onclick="switchTab('tab-blackjack', this)">BJ</button>
+    <button onclick="switchTab('tab-rat', this)">Rat</button>
+    <button onclick="switchTab('tab-dice', this)">Dice</button>
+    <button onclick="switchTab('tab-market', this)">Market Sim</button>
+</nav>
+
+<!-- Web Preview 1 -->
+<div id="tab-preview1" class="section active">
+    <h2>Web Preview 1</h2>
+    <div class="controls">
+        <input type="text" id="url-input1" style="flex-grow:1;" placeholder="URL...">
+        <button onclick="loadURL(1)">Load</button>
+        <!-- Inline HTML Fullscreen Button -->
+        <button class="btn-alt" onclick="document.getElementById('preview-frame1').requestFullscreen()">Full Screen</button>
+    </div>
+    <iframe id="preview-frame1" src="about:blank" allowfullscreen></iframe>
+</div>
+
+<!-- Web Preview 2 -->
+<div id="tab-preview2" class="section">
+    <h2>Web Preview 2</h2>
+    <div class="controls">
+        <input type="text" id="url-input2" style="flex-grow:1;" placeholder="URL...">
+        <button onclick="loadURL(2)">Load</button>
+        <!-- Inline HTML Fullscreen Button -->
+        <button class="btn-alt" onclick="document.getElementById('preview-frame2').requestFullscreen()">Full Screen</button>
+    </div>
+    <iframe id="preview-frame2" src="about:blank" allowfullscreen></iframe>
+</div>
+
+
+<!-- Drawing Pad -->
+<div id="tab-draw" class="section">
+    <h2>Drawing Pad</h2>
+    <div class="controls">
+        <input type="color" id="draw-color" value="#000000">
+        <button class="btn-save" onclick="saveDrawing()">Save Image</button>
+        <button class="btn-alt" onclick="clearCanvas()">Clear</button>
+    </div>
+    <canvas id="canvas" width="600" height="400"></canvas>
+</div>
+
+<!-- Password Generator -->
+<div id="tab-pass" class="section">
+    <h2>Secure Password Generator</h2>
+    <div class="big-time" id="pass-display" style="font-size: 1.5rem; word-break: break-all;">********</div>
+    <div class="controls">
+        <input type="number" id="pass-len" value="16" min="6" max="50" style="width:60px">
+        <button onclick="generatePass()">Generate</button>
+    </div>
+</div>
+
+<!-- ecomsim --!>
+<div id="tab-market" class="section">
+    <h2>Market Tycoon</h2>
+    <div style="font-size: 2rem; color: #28a745; margin-bottom: 20px;">
+        Balance: $<span id="mkt-bal">1000.00</span>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+        <!-- Stable Asset -->
+        <div style="background: #252525; padding: 15px; border-radius: 10px; border: 1px solid #444;">
+            <h3 style="margin-top:0;">Gold (GLD)</h3>
+            <div id="prc-gld" style="font-family: monospace; font-size: 1.8rem; margin: 10px 0;">$50.00</div>
+            <p>Owned: <b id="own-gld">0</b></p>
+            <button onclick="buy('gld', 50, 0.04)" style="background:#28a745">Buy</button>
+            <button onclick="sell('gld')" class="btn-alt">Sell</button>
+        </div>
+        
+        <!-- Volatile Asset -->
+        <div style="background: #252525; padding: 15px; border-radius: 10px; border: 1px solid #444;">
+            <h3 style="margin-top:0;">RatCoin (RAT)</h3>
+            <div id="prc-rat" style="font-family: monospace; font-size: 1.8rem; margin: 10px 0;">$1.00</div>
+            <p>Owned: <b id="own-rat">0</b></p>
+            <button onclick="buy('rat', 1, 0.25)" style="background:#28a745">Buy</button>
+            <button onclick="sell('rat')" class="btn-alt">Sell</button>
+        </div>
+    </div>
+
+    <div id="mkt-news" style="margin-top: 20px; font-style: italic; color: #888;"
+
+<!-- All Other Tabs (Condensed) -->
+<div id="tab-stopwatch" class="section">
+    <h2>Stopwatch</h2>
+    <div id="sw-display" class="big-time">00:00:00</div>
+    <button id="sw-btn" onclick="toggleStopwatch()">Start</button><button onclick="resetStopwatch()">Reset</button>
+</div>
+
+<div id="tab-timer" class="section">
+    <h2>Timer</h2>
+    <div id="tm-display" class="big-time">00:00</div>
+    <input type="number" id="tm-input" placeholder="Mins"><button onclick="toggleTimer()">Start</button>
+</div>
+
+<div id="tab-notes" class="section">
+    <h2>Notes</h2>
+    <textarea id="main-notes" style="width:100%; height:350px;" placeholder="Auto-saves your codes and notes..."></textarea>
+</div>
+
+<div id="tab-blackjack" class="section">
+    <h2>Blackjack</h2>
+    <div id="bj-msg">Ready?</div>
+    <p>Player: <span id="player-hand">-</span> | Dealer: <span id="dealer-hand">-</span></p>
+    <button onclick="bjStart()">Deal</button><button id="hit-btn" onclick="bjHit()" disabled>Hit</button><button id="stay-btn" onclick="bjStay()" disabled>Stay</button>
+</div>
+
+<div id="tab-rat" class="section">
+    <h2>Rat Roulette</h2>
+    <div class="wheel-container"><div id="rat">🐀</div></div>
+    <div id="rat-res">Spin!</div>
+    <button onclick="spinRat()">Spin</button>
+</div>
+
+<div id="tab-dice" class="section">
+    <h2>Dice</h2>
+    <div id="dice-res" class="big-time">0</div>
+    <button onclick="roll(20)">d20</button><button onclick="roll(6)">d6</button><button onclick="roll(4)">d4</button><button onclick="roll(10)">d10</button>
+</div>
+
+<script>
+    function switchTab(tabId, btn) {
+        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+        document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+        document.getElementById(tabId).classList.add('active');
+        btn.classList.add('active');
+        if(tabId === 'tab-draw') initCanvas();
+    }
+
+    // --- Drawing Pad Save & Draw ---
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    let painting = false;
+
+    function initCanvas() {
+        canvas.onmousedown = (e) => { painting = true; draw(e); };
+        canvas.onmouseup = () => { painting = false; ctx.beginPath(); };
+        canvas.onmousemove = draw;
+    }
+    function draw(e) {
+        if (!painting) return;
+        ctx.lineWidth = 5; ctx.lineCap = 'round'; ctx.strokeStyle = document.getElementById('draw-color').value;
+        const rect = canvas.getBoundingClientRect();
+        ctx.lineTo(e.clientX - rect.left, e.clientY - rect.top);
+        ctx.stroke(); ctx.beginPath(); ctx.moveTo(e.clientX - rect.left, e.clientY - rect.top);
+    }
+    function clearCanvas() { ctx.clearRect(0, 0, canvas.width, canvas.height); }
+    
+    function saveDrawing() {
+        const link = document.createElement('a');
+        link.download = 'my-drawing.png';
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+    }
+
+    // --- Web Previews ---
+    function loadURL(num) {
+        let u = document.getElementById('url-input' + num).value;
+        document.getElementById('preview-frame' + num).src = u.startsWith('http') ? u : 'https://' + u;
+    }
+
+    // --- Core Logic ---
+    function generatePass() {
+        const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()";
+        let pass = "", len = document.getElementById('pass-len').value;
+        for (let i = 0; i < len; i++) pass += chars.charAt(Math.floor(Math.random() * chars.length));
+        document.getElementById('pass-display').innerText = pass;
+    }
+
+    let swI, swS, swE = 0, swR = false;
+    function toggleStopwatch() {
+        if (!swR) { swS = Date.now() - swE; swI = setInterval(() => { swE = Date.now() - swS; document.getElementById('sw-display').innerText = new Date(swE).toISOString().substr(11, 8); }, 100); }
+        else clearInterval(swI); swR = !swR;
+    }
+    function resetStopwatch() { clearInterval(swI); swE = 0; swR = false; document.getElementById('sw-display').innerText = "00:00:00"; }
+
+    let tmI, tmLeft, tmR = false;
+    function toggleTimer() {
+        if (!tmR) { tmLeft = tmLeft || document.getElementById('tm-input').value * 60; tmI = setInterval(() => { 
+            if(tmLeft <= 0) { clearInterval(tmI); alert("Done!"); return; }
+            tmLeft--; document.getElementById('tm-display').innerText = Math.floor(tmLeft/60) + ":" + (tmLeft%60).toString().padStart(2,'0');
+        }, 1000); } else clearInterval(tmI); tmR = !tmR;
+    }
+
+    window.onload = () => document.getElementById('main-notes').value = localStorage.getItem('notes') || "";
+    document.getElementById('main-notes').oninput = (e) => localStorage.setItem('notes', e.target.value);
+    function roll(s) { document.getElementById('dice-res').innerText = Math.floor(Math.random()*s)+1; }
+    function spinRat() { let d = Math.floor(Math.random()*2000)+1000; document.getElementById('rat').style.transform = `translate(-50%, -50%) rotate(${d}deg)`; setTimeout(() => document.getElementById('rat-res').innerText = d%360 > 180 ? "Red" : "Black", 3000); }
+    
+    let pH, dH; function bjStart() { pH=[r(),r()]; dH=[r(),r()]; up(); btn(0); }
+    function r() { return Math.min(10, Math.floor(Math.random()*11)+1); }
+    function s(h) { return h.reduce((a,b)=>a+b,0); }
+    function up(m="Play") { document.getElementById('bj-msg').innerText = m; document.getElementById('player-hand').innerText = s(pH); document.getElementById('dealer-hand').innerText = dH+"+?"; }
+    function bjHit() { pH.push(r()); if(s(pH)>21) end("Bust!"); else up(); }
+    function bjStay() { while(s(dH)<17) dH.push(r()); end(s(dH)>21||s(pH)>s(dH)?"Win!":s(pH)<s(dH)?"Lose":"Tie"); }
+    function end(m) { document.getElementById('bj-msg').innerText = m; document.getElementById('dealer-hand').innerText = s(dH); btn(1); }
+    function btn(d) { document.getElementById('hit-btn').disabled = d; document.getElementById('stay-btn').disabled = d; }
+
+ 	let mkt = {
+            bal: 1000,
+            gld: { p: 50, o: 0, v: 0.03 },
+            rat: { p: 1, o: 0, v: 0.20 }
+        };
+
+        function buy(id) {
+            if (mkt.bal >= mkt[id].p) {
+                mkt.bal -= mkt[id].p;
+                mkt[id].o++;
+                upMkt();
+            }
+        }
+
+        function sell(id) {
+            if (mkt[id].o > 0) {
+                mkt.bal += mkt[id].p;
+                mkt[id].o--;
+                upMkt();
+            }
+        }
+
+        function upMkt() {
+            document.getElementById('mkt-bal').innerText = mkt.bal.toFixed(2);
+            document.getElementById('own-gld').innerText = mkt.gld.o;
+            document.getElementById('own-rat').innerText = mkt.rat.o;
+            document.getElementById('prc-gld').innerText = "$" + mkt.gld.p.toFixed(2);
+            document.getElementById('prc-rat').innerText = "$" + mkt.rat.p.toFixed(2);
+        }
+
+        // Economy Loop
+        setInterval(() => {
+            let news = "Market is stable.";
+            ['gld', 'rat'].forEach(id => {
+                let change = 1 + (Math.random() * mkt[id].v * 2 - mkt[id].v);
+                
+                // Random Events
+                let event = Math.random();
+                if (event > 0.98) { // 2% chance of a surge
+                    change = 1.5; 
+                    news = "🚀 " + id.toUpperCase() + " IS MOONING!";
+                } else if (event < 0.02) { // 2% chance of a crash
+                    change = 0.5;
+                    news = "📉 MARKET CRASH: " + id.toUpperCase() + " PLUMMETS!";
+                }
+
+                let oldP = mkt[id].p;
+                mkt[id].p *= change;
+                if (mkt[id].p < 0.01) mkt[id].p = 0.01;
+
+                let el = document.getElementById('prc-' + id);
+                el.style.color = mkt[id].p > oldP ? "#28a745" : "#dc3545";
+            });
+            document.getElementById('mkt-news').innerText = news;
+            upMkt();
+        }, 3000);
+</script>
+</body>
+</html>
