@@ -2,72 +2,282 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Combo Versions</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Combo Launcher</title>
 
   <style>
+    :root {
+      --bg1: #0b0218;
+      --bg2: #1a0633;
+      --accent: #a855f7;
+      --accent2: #6d28d9;
+      --text: #ffffff;
+    }
+
     body {
-      font-family: Arial, sans-serif;
-      background: #f4f4f4;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
       margin: 0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(circle at top, var(--bg2), var(--bg1) 70%);
+      color: var(--text);
+      overflow-x: hidden;
     }
 
-    .container {
+    body::before,
+    body::after {
+      content: "";
+      position: absolute;
+      width: 420px;
+      height: 420px;
+      filter: blur(120px);
+      z-index: 0;
+      opacity: 0.35;
+    }
+
+    body::before {
+      background: var(--accent);
+      top: -120px;
+      left: -120px;
+    }
+
+    body::after {
+      background: #3b82f6;
+      bottom: -140px;
+      right: -140px;
+    }
+
+    .app {
+      position: relative;
+      z-index: 1;
+      width: min(620px, 92%);
+      padding: 28px;
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      backdrop-filter: blur(14px);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.45);
+    }
+
+    .title {
       text-align: center;
-      background: white;
-      padding: 40px;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 6px;
     }
 
-    h1 {
-      margin-bottom: 25px;
+    .subtitle {
+      text-align: center;
+      font-size: 13px;
+      opacity: 0.7;
+      margin-bottom: 22px;
     }
 
-    .btn {
-      display: block;
-      width: 250px;
-      margin: 12px auto;
-      padding: 14px;
-      font-size: 16px;
-      border: none;
-      border-radius: 8px;
-      background-color: #0078ff;
-      color: white;
+    /* FOLDER */
+    .folder {
+      margin-bottom: 12px;
+      border-radius: 14px;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.04);
+    }
+
+    .folder-header {
+      padding: 14px 16px;
       cursor: pointer;
-      transition: background-color 0.2s ease;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      user-select: none;
+      transition: background 0.2s;
     }
 
-    .btn:hover {
-      background-color: #005fcc;
+    .folder-header:hover {
+      background: rgba(255,255,255,0.06);
+    }
+
+    .folder-title {
+      font-weight: 600;
+    }
+
+    .chevron {
+      transition: transform 0.25s ease;
+      opacity: 0.8;
+    }
+
+    .folder.open .chevron {
+      transform: rotate(90deg);
+    }
+
+    .folder-content {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      padding: 0 16px;
+      max-height: 0;
+      opacity: 0;
+      overflow: hidden;
+      transition: all 0.35s ease;
+    }
+
+    .folder.open .folder-content {
+      padding: 16px;
+      max-height: 500px;
+      opacity: 1;
+    }
+
+    /* TILE */
+    .tile {
+      position: relative;
+      padding: 16px 12px;
+      border-radius: 14px;
+      text-decoration: none;
+      color: white;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.12);
+      transition: transform 0.15s ease, box-shadow 0.2s ease;
+      overflow: hidden;
+    }
+
+    .tile:active {
+      transform: scale(0.94);
+    }
+
+    .tile:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 10px 25px rgba(168, 85, 247, 0.25);
+      border-color: rgba(168, 85, 247, 0.6);
+    }
+
+    .icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      margin: 0 auto 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+    }
+
+    .name {
+      text-align: center;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .desc {
+      text-align: center;
+      font-size: 11px;
+      opacity: 0.7;
+      margin-top: 3px;
+    }
+
+    /* ripple */
+    .ripple {
+      position: absolute;
+      border-radius: 50%;
+      transform: scale(0);
+      animation: ripple 600ms linear;
+      background: rgba(255, 255, 255, 0.35);
+      pointer-events: none;
+    }
+
+    @keyframes ripple {
+      to {
+        transform: scale(4);
+        opacity: 0;
+      }
     }
   </style>
 </head>
+
 <body>
+  <div class="app">
+    <div class="title">Combo Launcher</div>
+    <div class="subtitle">Grouped versions</div>
 
-  <div class="container">
-    <h1>Open Combo Versions</h1>
+    <!-- BASE -->
+    <div class="folder open">
+      <div class="folder-header" onclick="toggleFolder(this)">
+        <div class="folder-title">Base</div>
+        <div class="chevron">▶</div>
+      </div>
 
-    <button class="btn" onclick="location.href='combo.html'">
-      Open combo.html
-    </button>
+      <div class="folder-content">
+        <a class="tile" href="combo.html">
+          <div class="icon">C</div>
+          <div class="name">Combo</div>
+          <div class="desc">Original</div>
+        </a>
+      </div>
+    </div>
 
-    <button class="btn" onclick="location.href='combov2point1.html'">
-      Open combov2point1.html
-    </button>
+    <!-- V2 -->
+    <div class="folder">
+      <div class="folder-header" onclick="toggleFolder(this)">
+        <div class="folder-title">Version 2</div>
+        <div class="chevron">▶</div>
+      </div>
 
-    <button class="btn" onclick="location.href='combov2point2.html'">
-      Open combov2point2.html
-    </button>
+      <div class="folder-content">
+        <a class="tile" href="combov2point1.html">
+          <div class="icon">2.1</div>
+          <div class="name">v2.1</div>
+          <div class="desc">First update</div>
+        </a>
 
-    <button class="btn" onclick="location.href='combov3.html'">
-      Open combov3.html
-    </button>
+        <a class="tile" href="combov2point2.html">
+          <div class="icon">2.2</div>
+          <div class="name">v2.2</div>
+          <div class="desc">Bug fixes</div>
+        </a>
+      </div>
+    </div>
+
+    <!-- V3 -->
+    <div class="folder">
+      <div class="folder-header" onclick="toggleFolder(this)">
+        <div class="folder-title">Version 3</div>
+        <div class="chevron">▶</div>
+      </div>
+
+      <div class="folder-content">
+        <a class="tile" href="combov3.html">
+          <div class="icon">3</div>
+          <div class="name">v3</div>
+          <div class="desc">Latest release</div>
+        </a>
+      </div>
+    </div>
   </div>
 
+  <script>
+    function toggleFolder(header) {
+      const folder = header.parentElement;
+      folder.classList.toggle("open");
+    }
+
+    // ripple effect
+    document.querySelectorAll(".tile").forEach(tile => {
+      tile.addEventListener("click", function (e) {
+        const ripple = document.createElement("span");
+        ripple.classList.add("ripple");
+
+        const rect = this.getBoundingClientRect();
+        const size = Math.max(rect.width, rect.height);
+
+        ripple.style.width = ripple.style.height = size + "px";
+        ripple.style.left = e.clientX - rect.left - size / 2 + "px";
+        ripple.style.top = e.clientY - rect.top - size / 2 + "px";
+
+        this.appendChild(ripple);
+        setTimeout(() => ripple.remove(), 600);
+      });
+    });
+  </script>
 </body>
 </html>
