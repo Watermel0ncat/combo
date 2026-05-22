@@ -1,0 +1,43 @@
+Pretty simple—your launcher is just linking to other HTML files in the same folder, so adding more files is mostly about two steps:
+
+1) Add the new file to your repo
+
+Drop it into the same GitHub Pages folder, like:
+
+index.html
+combo.html
+combov2point1.html
+combov2point2.html
+combov3.html
+newfile.html   ← add this
+
+Make sure the filename matches exactly (GitHub is case-sensitive).
+
+2) Add a new button/tile in your index.html
+
+Since you’re using the folder version, you just add another tile inside the right folder.
+
+Example: adding combov4.html into a new “Version 4” folder:
+
+<div class="folder">
+  <div class="folder-header" onclick="toggleFolder(this)">
+    <div class="folder-title">Version 4</div>
+    <div class="chevron">▶</div>
+  </div>
+
+  <div class="folder-content">
+    <a class="tile" href="combov4.html">
+      <div class="icon">4</div>
+      <div class="name">v4</div>
+      <div class="desc">New release</div>
+    </a>
+  </div>
+</div>
+🔥 Important GitHub Pages detail
+If your site is like:
+https://username.github.io/repo/
+Then href="combov4.html" works only if the file is in the same repo root.
+Quick mental model
+File exists in repo → ✔️
+Link in index.html points to it → ✔️
+GitHub Pages updates after commit → ✔️
