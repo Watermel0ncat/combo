@@ -41,3 +41,68 @@ Quick mental model
 File exists in repo → ✔️
 Link in index.html points to it → ✔️
 GitHub Pages updates after commit → ✔️
+Adding a new folder is pretty straightforward in your current setup — you’re basically copying one existing “folder block” and changing the name + links.
+
+Here’s exactly how to do it.
+
+✅ 1. Copy an existing folder
+
+Take any of your current ones, like this V2 block:
+
+<div class="folder">
+  <div class="folder-header">
+    <div>Version 2</div>
+    <div class="chevron">▶</div>
+  </div>
+
+  <div class="folder-content">
+    ...
+  </div>
+</div>
+✅ 2. Paste it where you want the new folder
+
+For example, add Version 4:
+
+<div class="folder">
+  <div class="folder-header">
+    <div>Version 4</div>
+    <div class="chevron">▶</div>
+  </div>
+
+  <div class="folder-content">
+    <a class="tile" href="combov4.html">
+      <div class="icon">4</div>
+      <div class="name">v4</div>
+      <div class="desc">New release</div>
+    </a>
+  </div>
+</div>
+✅ 3. Add more files inside the folder
+
+Each file is just another tile:
+
+<a class="tile" href="somefile.html">
+  <div class="icon">A</div>
+  <div class="name">File A</div>
+  <div class="desc">Description</div>
+</a>
+
+You can put as many as you want inside .folder-content.
+
+⚠️ 4. Make sure the file actually exists
+
+If you add:
+
+href="combov4.html"
+
+Then you MUST also have:
+
+combov4.html
+
+in the same GitHub repo folder.
+
+🧠 Simple mental model
+.folder = group (like a folder on desktop)
+.folder-header = clickable title
+.folder-content = apps inside
+.tile = individual file button
