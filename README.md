@@ -1,1 +1,1 @@
-this is a collection of projects made by me. sadly, vesion 2 was lost to time, but 2.1 is still here
+this is a collection of projects made by me. sadly, vesion 2 was lost to time, but 2.1 is still here. 2.2 is an emergency patch because 2.1 was HORRIBLE. so uhh yea. 3 doesnt add much, but is visualy better and has 2 more items in the stock market
