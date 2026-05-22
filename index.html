@@ -11,52 +11,26 @@
       --bg2: #1a0633;
       --accent: #a855f7;
       --accent2: #6d28d9;
-      --text: #ffffff;
+      --text: #fff;
     }
 
     body {
       margin: 0;
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial;
       min-height: 100vh;
       display: flex;
       align-items: center;
       justify-content: center;
       background: radial-gradient(circle at top, var(--bg2), var(--bg1) 70%);
       color: var(--text);
-      overflow-x: hidden;
-    }
-
-    body::before,
-    body::after {
-      content: "";
-      position: absolute;
-      width: 420px;
-      height: 420px;
-      filter: blur(120px);
-      z-index: 0;
-      opacity: 0.35;
-    }
-
-    body::before {
-      background: var(--accent);
-      top: -120px;
-      left: -120px;
-    }
-
-    body::after {
-      background: #3b82f6;
-      bottom: -140px;
-      right: -140px;
     }
 
     .app {
-      position: relative;
-      z-index: 1;
       width: min(620px, 92%);
       padding: 28px;
       border-radius: 18px;
-      background: rgba(255, 255, 255, 0.06);
-      border: 1px solid rgba(255, 255, 255, 0.12);
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.12);
       backdrop-filter: blur(14px);
       box-shadow: 0 20px 60px rgba(0,0,0,0.45);
     }
@@ -72,10 +46,10 @@
       text-align: center;
       font-size: 13px;
       opacity: 0.7;
-      margin-bottom: 22px;
+      margin-bottom: 20px;
     }
 
-    /* FOLDER */
+    /* FOLDERS */
     .folder {
       margin-bottom: 12px;
       border-radius: 14px;
@@ -91,20 +65,14 @@
       justify-content: space-between;
       align-items: center;
       user-select: none;
-      transition: background 0.2s;
     }
 
     .folder-header:hover {
       background: rgba(255,255,255,0.06);
     }
 
-    .folder-title {
-      font-weight: 600;
-    }
-
     .chevron {
       transition: transform 0.25s ease;
-      opacity: 0.8;
     }
 
     .folder.open .chevron {
@@ -115,17 +83,19 @@
       display: grid;
       grid-template-columns: repeat(2, 1fr);
       gap: 12px;
-      padding: 0 16px;
+
       max-height: 0;
-      opacity: 0;
       overflow: hidden;
+      opacity: 0;
+      padding: 0 16px;
+
       transition: all 0.35s ease;
     }
 
     .folder.open .folder-content {
-      padding: 16px;
       max-height: 500px;
       opacity: 1;
+      padding: 16px;
     }
 
     /* TILE */
@@ -137,25 +107,26 @@
       color: white;
       background: rgba(255,255,255,0.06);
       border: 1px solid rgba(255,255,255,0.12);
-      transition: transform 0.15s ease, box-shadow 0.2s ease;
       overflow: hidden;
-    }
-
-    .tile:active {
-      transform: scale(0.94);
+      display: block;
+      transition: transform 0.15s ease, box-shadow 0.2s ease;
     }
 
     .tile:hover {
       transform: translateY(-4px);
-      box-shadow: 0 10px 25px rgba(168, 85, 247, 0.25);
-      border-color: rgba(168, 85, 247, 0.6);
+      box-shadow: 0 10px 25px rgba(168,85,247,0.25);
+      border-color: rgba(168,85,247,0.6);
+    }
+
+    .tile:active {
+      transform: scale(0.95);
     }
 
     .icon {
       width: 34px;
       height: 34px;
-      border-radius: 10px;
       margin: 0 auto 8px;
+      border-radius: 10px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -176,13 +147,13 @@
       margin-top: 3px;
     }
 
-    /* ripple */
+    /* RIPPLE */
     .ripple {
       position: absolute;
       border-radius: 50%;
       transform: scale(0);
       animation: ripple 600ms linear;
-      background: rgba(255, 255, 255, 0.35);
+      background: rgba(255,255,255,0.35);
       pointer-events: none;
     }
 
@@ -200,34 +171,32 @@
     <div class="title">Combo Launcher</div>
     <div class="subtitle">Grouped versions</div>
 
-    <!-- BASE -->
+    <!-- V1 -->
     <div class="folder open">
-      <div class="folder-header" onclick="toggleFolder(this)">
-        <div class="folder-title">Base</div>
+      <div class="folder-header">
+        <div>Version 1</div>
         <div class="chevron">▶</div>
       </div>
-
       <div class="folder-content">
         <a class="tile" href="combo.html">
-          <div class="icon">C</div>
-          <div class="name">Combo</div>
-          <div class="desc">Original</div>
+          <div class="icon">1</div>
+          <div class="name">v1</div>
+          <div class="desc">Base version</div>
         </a>
       </div>
     </div>
 
     <!-- V2 -->
     <div class="folder">
-      <div class="folder-header" onclick="toggleFolder(this)">
-        <div class="folder-title">Version 2</div>
+      <div class="folder-header">
+        <div>Version 2</div>
         <div class="chevron">▶</div>
       </div>
-
       <div class="folder-content">
         <a class="tile" href="combov2point1.html">
           <div class="icon">2.1</div>
           <div class="name">v2.1</div>
-          <div class="desc">First update</div>
+          <div class="desc">Update</div>
         </a>
 
         <a class="tile" href="combov2point2.html">
@@ -240,28 +209,29 @@
 
     <!-- V3 -->
     <div class="folder">
-      <div class="folder-header" onclick="toggleFolder(this)">
-        <div class="folder-title">Version 3</div>
+      <div class="folder-header">
+        <div>Version 3</div>
         <div class="chevron">▶</div>
       </div>
-
       <div class="folder-content">
         <a class="tile" href="combov3.html">
           <div class="icon">3</div>
           <div class="name">v3</div>
-          <div class="desc">Latest release</div>
+          <div class="desc">Latest</div>
         </a>
       </div>
     </div>
   </div>
 
   <script>
-    function toggleFolder(header) {
-      const folder = header.parentElement;
-      folder.classList.toggle("open");
-    }
+    // folder toggle (FIXED)
+    document.querySelectorAll(".folder-header").forEach(header => {
+      header.addEventListener("click", () => {
+        header.parentElement.classList.toggle("open");
+      });
+    });
 
-    // ripple effect
+    // ripple (FIXED + works reliably)
     document.querySelectorAll(".tile").forEach(tile => {
       tile.addEventListener("click", function (e) {
         const ripple = document.createElement("span");
@@ -271,10 +241,11 @@
         const size = Math.max(rect.width, rect.height);
 
         ripple.style.width = ripple.style.height = size + "px";
-        ripple.style.left = e.clientX - rect.left - size / 2 + "px";
-        ripple.style.top = e.clientY - rect.top - size / 2 + "px";
+        ripple.style.left = (e.clientX - rect.left - size / 2) + "px";
+        ripple.style.top = (e.clientY - rect.top - size / 2) + "px";
 
         this.appendChild(ripple);
+
         setTimeout(() => ripple.remove(), 600);
       });
     });
