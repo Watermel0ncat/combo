@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multi-Feature Hub</title>
+    <style>
+        :root { --bg: #3c0c57; --card: #582753; --primary: #7a0168b8; --text: #4c649e; --success: #c800ff; --danger: #dc3545; }
+        body { font-family: 'Tahoma', sans-serif; background: var(--bg); color: var(--text); margin: 0; }
+        
+        /* Persistent Layout */
+        .main-container { display: flex; min-height: 100vh; }
+        .content-area { flex: 1; display: flex; flex-direction: column; align-items: center; padding-bottom: 50px; }
+        
+        nav { background: #300a63; width: 100%; display: flex; justify-content: center; padding: 10px 0; position: sticky; top: 0; z-index: 1000; flex-wrap: wrap; gap: 5px; }
+        nav button { background: #333; color: white; border: none; padding: 8px 12px; cursor: pointer; border-radius: 5px; font-weight: bold; font-size: 0.85rem; }
+        nav button.active { background: var(--primary); }
+
+        /* Sidebar Styles */
+        .sidebar { width: 260px; background: #000; border-left: 2px solid #333; padding: 20px; position: sticky; top: 0; height: 100vh; box-sizing: border-box; }
+        .side-box { background: #1a1a1a; padding: 15px; border-radius: 10px; margin-bottom: 15px; border: 1px solid #333; }
+        .side-box h3 { margin: 0 0 10px 0; color: var(--primary); font-size: 1rem; }
+        .side-price { font-family: monospace; font-size: 1.2rem; font-weight: bold; }
+        .news-ticker { color: #ffcc00; font-style: italic; font-size: 0.9rem; margin-top: 10px; }
+
+        .section { display: none; width: 90%; max-width: 800px; margin-top: 20px; background: var(--card); padding: 25px; border-radius: 15px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .section.active { display: block; }
+
+        .controls { display: flex; gap: 10px; margin-bottom: 15px; justify-content: center; flex-wrap: wrap; }
+        input, textarea { padding: 10px; border-radius: 5px; border: 1px solid #444; background: #2a2a2a; color: white; }
+        button { padding: 8px 12px; border-radius: 5px; border: none; cursor: pointer; background: var(--primary); color: white; font-weight: bold; }
+        .btn-alt { background: #444; }
+        
+        iframe { width: 100%; height: 500px; border: none; background: white; border-radius: 5px; }
+        #canvas { background: white; border-radius: 5px; cursor: crosshair; }
+        .big-time { font-size: 3rem; font-family: monospace; margin: 15px 0; color: #ffcc00; }
+    </style>
+</head>
+<body>
+
+<div class="main-container">
+    <div class="content-area">
+        <nav>
+            <button onclick="switchTab('tab-preview1', this)" class="active">Web 1</button>
+            <button onclick="switchTab('tab-preview2', this)">Web 2</button>
+            <button onclick="switchTab('tab-market', this)">Market Sim</button>
+            <button onclick="switchTab('tab-draw', this)">Draw</button>
+            <button onclick="switchTab('tab-notes', this)">Notes</button>
+            <button onclick="switchTab('tab-blackjack', this)">BJ</button>
+            <button onclick="switchTab('tab-rat', this)">Rat</button>
+            <button onclick="switchTab('tab-dice', this)">Dice</button>
+            <button onclick="switchTab('tab-stopwatch', this)">Watch</button>
+            <button onclick="switchTab('tab-timer', this)">Timer</button>
+        </nav>
+
+<!-- Web Preview 1 -->
+<div id="tab-preview1" class="section active">
+    <h2>Web Preview 1</h2>
+    <div class="controls">
+        <input type="text" id="url-input1" style="flex-grow:1;" placeholder="URL...">
+        <button onclick="loadURL(1)">Load</button>
+        <!-- Inline HTML Fullscreen Button -->
+        <button class="btn-alt" onclick="document.getElementById('preview-frame1').requestFullscreen()">Full Screen</button>
+    </div>
+    <iframe id="preview-frame1" src="about:blank" allowfullscreen></iframe>
+</div>
+
+<!-- Web Preview 2 -->
+<div id="tab-preview2" class="section">
+    <h2>Web Preview 2</h2>
+    <div class="controls">
+        <input type="text" id="url-input2" style="flex-grow:1;" placeholder="URL...">
+        <button onclick="loadURL(2)">Load</button>
+        <!-- Inline HTML Fullscreen Button -->
+        <button class="btn-alt" onclick="document.getElementById('preview-frame2').requestFullscreen()">Full Screen</button>
+    </div>
+    <iframe id="preview-frame2" src="about:blank" allowfullscreen></iframe>
+</div>
+
+        <!-- Market Sim -->
+        <div id="tab-market" class="section">
+            <h2>Market Tycoon</h2>
+            <div style="font-size: 2rem; color: #28a745; margin-bottom: 20px;">Balance: $<span id="mkt-bal">1000.00</span></div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                <div style="background: #6f760f; padding: 15px; border-radius: 10px;">
+                    <h3>Gold (GLD)</h3>
+                    <div id="prc-gld" style="font-family: monospace; font-size: 1.5rem;">$50.00</div>
+                    <p>Owned: <b id="own-gld">0</b></p>
+                    <button onclick="buy('gld')">Buy</button> <button class="btn-alt" onclick="sell('gld')">Sell</button>
+                </div>
+                <div style="background: #3b393a; padding: 15px; border-radius: 10px;">
+                    <h3>RatCoin (RAT)</h3>
+                    <div id="prc-rat" style="font-family: monospace; font-size: 1.5rem;">$1.00</div>
+                    <p>Owned: <b id="own-rat">0</b></p>
+                    <button onclick="buy('rat')">Buy</button> <button class="btn-alt" onclick="sell('rat')">Sell</button>
+                </div>
+                                <div style="background: #be9201; padding: 15px; border-radius: 10px;">
+                    <h3>A single slice of american cheese (CHS)</h3>
+                    <div id="prc-chs" style="font-family: monospace; font-size: 1.5rem;">$100.00</div>
+                    <p>Owned: <b id="own-chs">0</b></p>
+                    <button onclick="buy('chs')">Buy</button> <button class="btn-alt" onclick="sell('chs')">Sell</button>
+                </div>
+                                <div style="background: #407702; padding: 15px; border-radius: 10px;">
+                    <h3>Gagle (GAG)</h3>
+                    <div id="prc-gag" style="font-family: monospace; font-size: 1.5rem;">$38.05</div>
+                    <p>Owned: <b id="own-gag">0</b></p>
+                    <button onclick="buy('gag')">Buy</button> <button class="btn-alt" onclick="sell('gag')">Sell</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Draw Pad -->
+        <div id="tab-draw" class="section">
+            <h2>Drawing Pad</h2>
+            <div class="controls">
+                <input type="color" id="draw-color" value="#000000">
+                <button onclick="saveDrawing()" style="background:#28a745">Save</button>
+                <button onclick="clearCanvas()" class="btn-alt">Clear</button>
+            </div>
+            <canvas id="canvas" width="600" height="400"></canvas>
+        </div>
+
+        <!-- Notes -->
+        <div id="tab-notes" class="section">
+            <h2>Notes</h2>
+            <textarea id="main-notes" style="width:100%; height:400px;"></textarea>
+        </div>
+
+        <!-- Games -->
+        <div id="tab-blackjack" class="section">
+            <h2>Blackjack</h2>
+            <div id="bj-msg">Ready?</div>
+            <p>Player: <span id="player-hand">-</span> | Dealer: <span id="dealer-hand">-</span></p>
+            <button onclick="bjStart()">Deal</button><button id="hit-btn" onclick="bjHit()" disabled>Hit</button><button id="stay-btn" onclick="bjStay()" disabled>Stay</button>
+        </div>
+
+        <div id="tab-rat" class="section">
+            <h2>Rat Roulette</h2>
+            <div style="border: 8px solid #444; width:100px; height:100px; border-radius:50%; margin:20px auto; position:relative; background:conic-gradient(red 50%, black 50%)">
+                <div id="rat" style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); font-size:30px; transition:3s">🐀</div>
+            </div>
+            <div id="rat-res">Spin!</div>
+            <button onclick="spinRat()">Spin</button>
+        </div>
+
+        <div id="tab-dice" class="section">
+            <h2>Dice</h2>
+            <div id="dice-res" class="big-time">0</div>
+            <button onclick="roll(20)">d20</button><button onclick="roll(6)">d6</button><button onclick="roll(4)">d4</button><button onclick="roll(10)">d10</button>
+        </div>
+
+        <div id="tab-stopwatch" class="section">
+            <h2>Stopwatch</h2>
+            <div id="sw-display" class="big-time">00:00:00</div>
+            <button onclick="toggleSW()">Start/Stop</button><button onclick="resetSW()">Reset</button>
+        </div>
+
+        <div id="tab-timer" class="section">
+            <h2>Timer</h2>
+            <div id="tm-display" class="big-time">00:00</div>
+            <input type="number" id="tm-input" placeholder="Mins"><button onclick="toggleTM()">Start</button>
+        </div>
+    </div>
+
+    <!-- PERSISTENT SIDEBAR -->
+    <aside class="sidebar">
+        <h2 style="color:white; font-size:1.2rem;">MARKET WATCH</h2>
+        <div class="side-box">
+            <h3>Balance</h3>
+            <div id="side-bal" style="color:var(--success); font-weight:bold;">$1000.00</div>
+        </div>
+        <div class="side-box">
+            <h3>GLD Price</h3>
+            <div id="side-gld" class="side-price">$50.00</div>
+            <button onclick="buy('gld')" style="font-size:0.7rem; margin-top:5px; width:100%;">Quick Buy</button>
+        </div>
+        <div class="side-box">
+            <h3>RAT Price</h3>
+            <div id="side-rat" class="side-price">$1.00</div>
+            <button onclick="buy('rat')" style="font-size:0.7rem; margin-top:5px; width:100%;">Quick Buy</button>
+        </div>
+        <div class="side-box">
+            <h3>CHS Price</h3>
+            <div id="side-chs" class="side-price">$100.00</div>
+            <button onclick="buy('chs')" style="font-size:0.7rem; margin-top:5px; width:100%;">Quick Buy</button>
+        </div>
+        <div class="side-box">
+            <h3>GAG Price</h3>
+            <div id="side-gag" class="side-price">$38.05</div>
+            <button onclick="buy('gag')" style="font-size:0.7rem; margin-top:5px; width:100%;">Quick Buy</button>
+        </div>
+        <div class="side-box">
+            <h3>News</h3>
+            <div id="side-news" class="news-ticker">Market Open</div>
+        </div>
+    </aside>
+</div>
+
+<script>
+    function switchTab(t, b) {
+        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+        document.querySelectorAll('nav button').forEach(nb => nb.classList.remove('active'));
+        document.getElementById(t).classList.add('active');
+        b.classList.add('active');
+        if(t === 'tab-draw') initCanvas();
+    }
+
+    // Market Logic
+    let mkt = { bal: 1000, gld: { p: 50, o: 0, v: 0.03 }, rat: { p: 1, o: 0, v: 0.20 }, chs: { p: 100, o: 0, v: 0.01 }, gag: { p: 38.05, o: 0, v: 0.10 } };
+    function buy(id) { if(mkt.bal >= mkt[id].p) { mkt.bal -= mkt[id].p; mkt[id].o++; upMkt(); } }
+    function sell(id) { if(mkt[id].o > 0) { mkt.bal += mkt[id].p; mkt[id].o--; upMkt(); } }
+    function upMkt() {
+        document.getElementById('mkt-bal').innerText = mkt.bal.toFixed(2);
+        document.getElementById('side-bal').innerText = "$" + mkt.bal.toFixed(2);
+        ['gld','rat','chs','gag'].forEach(id => {
+            let pStr = "$" + mkt[id].p.toFixed(2);
+            document.getElementById('prc-'+id).innerText = pStr;
+            document.getElementById('side-'+id).innerText = pStr;
+            document.getElementById('own-'+id).innerText = mkt[id].o;
+        });
+    }
+
+    setInterval(() => {
+        let news = "Market Stable";
+        ['gld','rat','chs','gag'].forEach(id => {
+            let old = mkt[id].p;
+            let change = 1 + (Math.random() * mkt[id].v * 2 - mkt[id].v);
+            let rnd = Math.random();
+            if(rnd > 0.98) { change = 1.5; news = "🚀 " + id.toUpperCase() + " MOON!"; }
+            else if(rnd < 0.02) { change = 0.5; news = "📉 " + id.toUpperCase() + " CRASH!"; }
+            mkt[id].p *= change; if(mkt[id].p < 0.01) mkt[id].p = 0.01;
+            let color = mkt[id].p > old ? "#28a745" : "#dc3545";
+            document.getElementById('prc-'+id).style.color = color;
+            document.getElementById('side-'+id).style.color = color;
+        });
+        document.getElementById('side-news').innerText = news;
+        upMkt();
+    }, 3000);
+
+    // Other Logic
+        function loadURL(num) {
+        let u = document.getElementById('url-input' + num).value;
+        document.getElementById('preview-frame' + num).src = u.startsWith('http') ? u : 'https://' + u;
+    }
+
+</script>
+     
+    // Draw Pad
+    const cvs = document.getElementById('canvas'), ctx = cvs.getContext('2d');
+    let paint = false;
+    function initCanvas() {
+        cvs.onmousedown = (e) => { paint = true; draw(e); };
+        cvs.onmouseup = () => { paint = false; ctx.beginPath(); };
+        cvs.onmousemove = draw;
+    }
+    function draw(e) { if(!paint) return; ctx.lineWidth = 5; ctx.lineCap = 'round'; ctx.strokeStyle = document.getElementById('draw-color').value; const r = cvs.getBoundingClientRect(); ctx.lineTo(e.clientX - r.left, e.clientY - r.top); ctx.stroke(); ctx.beginPath(); ctx.moveTo(e.clientX - r.left, e.clientY - r.top); }
+    function clearCanvas() { ctx.clearRect(0,0,cvs.width,cvs.height); }
+    function saveDrawing() { const l = document.createElement('a'); l.download = 'sketch.png'; l.href = cvs.toDataURL(); l.click(); }
+
+    // Games
+    function roll(s) { document.getElementById('dice-res').innerText = Math.floor(Math.random()*s)+1; }
+    function spinRat() { let d = Math.floor(Math.random()*2000)+1000; document.getElementById('rat').style.transform = `translate(-50%,-50%) rotate(${d}deg)`; setTimeout(() => document.getElementById('rat-res').innerText = d%360 > 180 ? "Red" : "Black", 3000); }
+    
+    let pH, dH; function bjStart() { pH=[r(),r()]; dH=[r(),r()]; bjUp(); btn(0); } 
+    function r() { return Math.min(10, Math.floor(Math.random()*11)+1); } 
+    function s(h) { return h.reduce((a,b)=>a+b,0); } function bjUp() { document.getElementById('player-hand').innerText = s(pH); document.getElementById('dealer-hand').innerText = dH[0] + "+?"; } 
+    function bjHit() { pH.push(r()); if(s(pH)>21) bjEnd("Bust!"); else bjUp(); } function bjStay() { while(s(dH)<17) dH.push(r()); bjEnd(s(dH)>21||s(pH)>s(dH)?"Win!":s(pH)<s(dH)?"Lose":"Tie"); } 
+    function bjEnd(m) { document.getElementById('bj-msg').innerText = m; document.getElementById('dealer-hand').innerText = s(dH); btn(1); } 
+    function btn(d) { document.getElementById('hit-btn').disabled = d; document.getElementById('stay-btn').disabled = d; }
+
+    // Clocks
+    let swI, swE = 0, swR = false;
+    function toggleSW() { if(!swR) { let s = Date.now() - swE; swI = setInterval(() => { swE = Date.now() - s; document.getElementById('sw-display').innerText = new Date(swE).toISOString().substr(11, 8); }, 100); } else clearInterval(swI); swR = !swR; }
+    function resetSW() { clearInterval(swI); swE = 0; swR = false; document.getElementById('sw-display').innerText = "00:00:00"; }
+    let tmI, tmLeft;
+    function toggleTM() { tmLeft = tmLeft || document.getElementById('tm-input').value * 60; tmI = setInterval(() => { if(tmLeft <= 0) { clearInterval(tmI); alert("Timer Done!"); return; } tmLeft--; document.getElementById('tm-display').innerText = Math.floor(tmLeft/60) + ":" + (tmLeft%60).toString().padStart(2,'0'); }, 1000); }
+
+    window.onload = () => { document.getElementById('main-notes').value = localStorage.getItem('hub_notes') || ""; upMkt(); };
+    document.getElementById('main-notes').oninput = (e) => localStorage.setItem('hub_notes', e.target.value);
+</script>
+
+</body>
+</html>
