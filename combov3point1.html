@@ -96,10 +96,10 @@
                     <button onclick="buy('rat')">Buy</button> <button class="btn-alt" onclick="sell('rat')">Sell</button>
                 </div>
                                 <div style="background: #be9201; padding: 15px; border-radius: 10px;">
-                    <h3>A single slice of american cheese (CHS)</h3>
-                    <div id="prc-chs" style="font-family: monospace; font-size: 1.5rem;">$100.00</div>
-                    <p>Owned: <b id="own-chs">0</b></p>
-                    <button onclick="buy('chs')">Buy</button> <button class="btn-alt" onclick="sell('chs')">Sell</button>
+                    <h3>A single slice of american cheese (ASS)</h3>
+                    <div id="prc-ass" style="font-family: monospace; font-size: 1.5rem;">$100.00</div>
+                    <p>Owned: <b id="own-ass">0</b></p>
+                    <button onclick="buy('ass')">Buy</button> <button class="btn-alt" onclick="sell('ass')">Sell</button>
                 </div>
                                 <div style="background: #407702; padding: 15px; border-radius: 10px;">
                     <h3>Gagle (GAG)</h3>
@@ -201,9 +201,9 @@
             <button onclick="buy('rat')" style="font-size:0.7rem; margin-top:5px; width:100%;">Quick Buy</button>
         </div>
         <div class="side-box">
-            <h3>CHS Price</h3>
-            <div id="side-chs" class="side-price">$100.00</div>
-            <button onclick="buy('chs')" style="font-size:0.7rem; margin-top:5px; width:100%;">Quick Buy</button>
+            <h3>ASS Price</h3>
+            <div id="side-ass" class="side-price">$100.00</div>
+            <button onclick="buy('ass')" style="font-size:0.7rem; margin-top:5px; width:100%;">Quick Buy</button>
         </div>
         <div class="side-box">
             <h3>GAG Price</h3>
@@ -227,13 +227,13 @@
     }
 
     // Market Logic
-    let mkt = { bal: 1000, gld: { p: 50, o: 0, v: 0.03 }, rat: { p: 1, o: 0, v: 0.20 }, chs: { p: 100, o: 0, v: 0.01 }, gag: { p: 38.05, o: 0, v: 0.10 } };
+    let mkt = { bal: 1000, gld: { p: 50, o: 0, v: 0.03 }, rat: { p: 1, o: 0, v: 0.20 }, ass: { p: 100, o: 0, v: 0.01 }, gag: { p: 38.05, o: 0, v: 0.10 } };
     function buy(id) { if(mkt.bal >= mkt[id].p) { mkt.bal -= mkt[id].p; mkt[id].o++; upMkt(); } }
     function sell(id) { if(mkt[id].o > 0) { mkt.bal += mkt[id].p; mkt[id].o--; upMkt(); } }
     function upMkt() {
         document.getElementById('mkt-bal').innerText = mkt.bal.toFixed(2);
         document.getElementById('side-bal').innerText = "$" + mkt.bal.toFixed(2);
-        ['gld','rat','chs','gag'].forEach(id => {
+        ['gld','rat','ass','gag'].forEach(id => {
             let pStr = "$" + mkt[id].p.toFixed(2);
             document.getElementById('prc-'+id).innerText = pStr;
             document.getElementById('side-'+id).innerText = pStr;
@@ -243,7 +243,7 @@
 
     setInterval(() => {
         let news = "Market Stable";
-        ['gld','rat','chs','gag'].forEach(id => {
+        ['gld','rat','ass','gag'].forEach(id => {
             let old = mkt[id].p;
             let change = 1 + (Math.random() * mkt[id].v * 2 - mkt[id].v);
             let rnd = Math.random();
