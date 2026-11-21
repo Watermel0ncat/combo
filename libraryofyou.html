@@ -1,0 +1,1156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Book Tracker</title>
+	<style>
+		:root { color-scheme: dark; font-family: system-ui, sans-serif; color: #f4efff; background: #09070e; }
+		body { position: relative; isolation: isolate; min-height: 100vh; max-width: 860px; margin: 0 auto; padding: 32px 18px; }
+		body::before { content: ""; position: fixed; z-index: -2; inset: 0; pointer-events: none; background: radial-gradient(900px circle at 90% 100%, rgba(84, 34, 138, .22), transparent 65%), linear-gradient(135deg, #09070e, #130b1d 55%, #090711); }
+		body::after, main::before, main::after, html::before, html::after { content: ""; position: fixed; z-index: -1; border-radius: 50%; pointer-events: none; filter: blur(28px); }
+		.purple-blob { position: fixed; z-index: -1; width: 210px; height: 210px; border-radius: 50%; pointer-events: none; filter: blur(28px); }
+		.purple-blob-one { top: 65%; left: 12%; background: radial-gradient(circle, rgba(154, 76, 255, .36), rgba(103, 39, 183, .10) 55%, transparent 72%); animation: blob-bounce-six 23s ease-in-out infinite alternate; }
+		.purple-blob-two { top: 18%; left: 48%; background: radial-gradient(circle, rgba(185, 92, 255, .30), rgba(112, 45, 196, .10) 55%, transparent 72%); animation: blob-bounce-seven 21s ease-in-out infinite alternate; }
+		.purple-blob-three { top: 72%; right: 8%; background: radial-gradient(circle, rgba(126, 62, 226, .38), rgba(84, 34, 160, .10) 55%, transparent 72%); animation: blob-bounce-eight 25s ease-in-out infinite alternate; }
+		.color-blob { position: fixed; z-index: -1; width: 210px; height: 210px; border-radius: 50%; pointer-events: none; filter: blur(28px); }
+		.green-blob-one { top: 12%; left: 28%; background: radial-gradient(circle, rgba(54, 220, 125, .32), rgba(30, 140, 80, .10) 55%, transparent 72%); animation: blob-bounce-four 20s ease-in-out infinite alternate; }
+		.green-blob-two { top: 52%; left: 4%; background: radial-gradient(circle, rgba(78, 235, 145, .30), rgba(32, 150, 88, .10) 55%, transparent 72%); animation: blob-bounce-six 23s ease-in-out infinite alternate; }
+		.green-blob-three { top: 32%; right: 22%; background: radial-gradient(circle, rgba(42, 195, 106, .34), rgba(24, 125, 68, .10) 55%, transparent 72%); animation: blob-bounce-seven 21s ease-in-out infinite alternate; }
+		.green-blob-four { bottom: 8%; right: 34%; background: radial-gradient(circle, rgba(96, 225, 125, .30), rgba(40, 135, 62, .10) 55%, transparent 72%); animation: blob-bounce-eight 25s ease-in-out infinite alternate; }
+		.orange-blob-one { top: 40%; left: 36%; background: radial-gradient(circle, rgba(255, 151, 62, .30), rgba(180, 85, 24, .10) 55%, transparent 72%); animation: blob-bounce-two 22s ease-in-out infinite alternate; }
+		.orange-blob-two { bottom: 18%; right: 14%; background: radial-gradient(circle, rgba(255, 174, 76, .28), rgba(190, 100, 30, .10) 55%, transparent 72%); animation: blob-bounce-five 24s ease-in-out infinite alternate; }
+		.blue-blob { top: 4%; right: 38%; background: radial-gradient(circle, rgba(70, 155, 255, .32), rgba(35, 90, 190, .10) 55%, transparent 72%); animation: blob-bounce-three 26s ease-in-out infinite alternate; }
+		body::after, main::before { width: 280px; height: 280px; }
+		body::after { top: 8%; left: 8%; background: radial-gradient(circle, rgba(145, 71, 255, .42), rgba(110, 42, 190, .12) 55%, transparent 72%); animation: blob-bounce-one 18s ease-in-out infinite alternate; }
+		main::before { top: 48%; left: 62%; background: radial-gradient(circle, rgba(111, 53, 200, .38), rgba(84, 34, 138, .12) 55%, transparent 72%); animation: blob-bounce-two 22s ease-in-out infinite alternate; }
+		main::after { top: 5%; right: -120px; width: 220px; height: 220px; background: radial-gradient(circle, rgba(168, 86, 255, .34), rgba(92, 34, 160, .10) 55%, transparent 72%); animation: blob-bounce-three 26s ease-in-out infinite alternate; }
+		html::before { bottom: -100px; left: 28%; width: 240px; height: 240px; background: radial-gradient(circle, rgba(124, 55, 220, .40), rgba(70, 28, 130, .12) 55%, transparent 72%); animation: blob-bounce-four 20s ease-in-out infinite alternate; }
+		html::after { top: 24%; right: 12%; width: 190px; height: 190px; background: radial-gradient(circle, rgba(194, 122, 255, .28), rgba(116, 51, 190, .10) 55%, transparent 72%); animation: blob-bounce-five 24s ease-in-out infinite alternate; }
+		@keyframes blob-bounce-one { 0% { transform: translate(0, 0) scale(.85); } 30% { transform: translate(48vw, 18vh) scale(1.15); } 65% { transform: translate(20vw, 58vh) scale(.95); } 100% { transform: translate(68vw, 38vh) scale(1.1); } }
+		@keyframes blob-bounce-two { 0% { transform: translate(0, 0) scale(1); } 35% { transform: translate(-45vw, -30vh) scale(.8); } 70% { transform: translate(-18vw, 24vh) scale(1.2); } 100% { transform: translate(-55vw, -8vh) scale(.9); } }
+		@keyframes blob-bounce-three { 0% { transform: translate(0, 0) scale(.9); } 40% { transform: translate(-55vw, 32vh) scale(1.18); } 70% { transform: translate(-25vw, -12vh) scale(.82); } 100% { transform: translate(-68vw, 18vh) scale(1.1); } }
+		@keyframes blob-bounce-four { 0% { transform: translate(0, 0) scale(.86); } 30% { transform: translate(22vw, -38vh) scale(1.12); } 65% { transform: translate(-18vw, -62vh) scale(.92); } 100% { transform: translate(38vw, -28vh) scale(1.2); } }
+		@keyframes blob-bounce-five { 0% { transform: translate(0, 0) scale(.8); } 35% { transform: translate(-42vw, 52vh) scale(1.15); } 70% { transform: translate(20vw, 20vh) scale(.95); } 100% { transform: translate(-28vw, -18vh) scale(1.08); } }
+		@keyframes blob-bounce-six { 0% { transform: translate(0, 0) scale(.9); } 50% { transform: translate(35vw, -30vh) scale(1.15); } 100% { transform: translate(12vw, -55vh) scale(.85); } }
+		@keyframes blob-bounce-seven { 0% { transform: translate(0, 0) scale(.85); } 50% { transform: translate(-38vw, 42vh) scale(1.12); } 100% { transform: translate(28vw, 55vh) scale(.95); } }
+		@keyframes blob-bounce-eight { 0% { transform: translate(0, 0) scale(1); } 50% { transform: translate(-42vw, -38vh) scale(.82); } 100% { transform: translate(-18vw, -58vh) scale(1.16); } }
+		@media (prefers-reduced-motion: reduce) { body::after, main::before, main::after, html::before, html::after, .purple-blob, .color-blob { animation: none; } }
+		h1 { margin: 0 0 6px; }
+		.intro { margin: 0 0 24px; color: #b7a9c8; }
+		section, .book { background: rgba(22, 17, 30, .86); border: 1px solid #39284d; border-radius: 12px; padding: 18px; box-shadow: 0 14px 40px rgba(0, 0, 0, .24); backdrop-filter: blur(12px); }
+		form { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+		label { display: grid; gap: 6px; font-weight: 600; }
+		input, select, button { font: inherit; padding: 10px 12px; border: 1px solid #49345f; border-radius: 8px; }
+		input, select { color: #f4efff; background: #100c17; }
+		input::placeholder { color: #827593; }
+		input:focus, select:focus, button:focus-visible { outline: 3px solid #b68bff; outline-offset: 1px; }
+		.wide { grid-column: 1 / -1; }
+		button { cursor: pointer; background: linear-gradient(105deg, #7136c8, #a04de0); border-color: #8b4ed0; color: white; font-weight: 650; transition: filter .16s ease; }
+		button:hover { filter: brightness(1.15); }
+		.controls { display: flex; flex-wrap: wrap; align-items: end; gap: 14px; margin: 22px 0 14px; }
+		.controls label { min-width: 180px; }
+		.library-layout { display: grid; grid-template-columns: 190px minmax(0, 1fr); align-items: start; gap: 18px; }
+		.shelf-sidebar { position: sticky; top: 18px; display: grid; gap: 8px; padding: 12px; }
+		.shelf-sidebar h2 { margin: 0 0 4px; font-size: 1rem; }
+		#shelf-tabs { display: grid; gap: 8px; }
+		.shelf-item { display: flex; gap: 6px; min-width: 0; }
+		.shelf-tab { text-align: left; background: #171020; border-color: #49345f; }
+		.shelf-item .shelf-tab { flex: 1; min-width: 0; }
+		.shelf-tab[aria-current="page"] { background: linear-gradient(105deg, #7136c8, #a04de0); border-color: #b68bff; }
+		.delete-shelf { flex: 0 0 auto; padding: 8px 10px; background: #24182e; color: #e2c6ff; border-color: #61427b; }
+		.create-shelf { width: 100%; }
+		.library-content { min-width: 0; }
+		.data-actions { display: flex; gap: 8px; }
+		.data-actions button { padding: 10px 12px; }
+		.data-actions input[type="file"] { display: none; }
+		.total { margin-left: auto; font-size: 1.05rem; font-weight: 700; }
+		#book-list { display: grid; gap: 10px; }
+		.book { display: flex; justify-content: space-between; align-items: flex-start; gap: 14px; }
+		.book-details { min-width: 0; flex: 1; }
+		.book h2 { font-size: 1.1rem; margin: 0 0 5px; overflow-wrap: anywhere; }
+		.book p { margin: 0; color: #b7a9c8; }
+		.book-shelves { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px; margin-top: 10px; }
+		.remove { flex: 0 0 auto; background: #24182e; color: #e2c6ff; border-color: #61427b; padding: 7px 10px; }
+		.remove:hover { background: #352044; }
+		#empty { color: #b7a9c8; text-align: center; padding: 24px; }
+		@media (max-width: 560px) { .library-layout { grid-template-columns: 1fr; } .shelf-sidebar { position: static; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); } .shelf-sidebar h2 { grid-column: 1 / -1; } form { grid-template-columns: 1fr; } .wide { grid-column: auto; } .total { width: 100%; margin-left: 0; } }
+	</style>
+</head>
+<body>
+	<main>
+		<div class="purple-blob purple-blob-one" aria-hidden="true"></div>
+		<div class="purple-blob purple-blob-two" aria-hidden="true"></div>
+		<div class="purple-blob purple-blob-three" aria-hidden="true"></div>
+		<div class="color-blob green-blob-one" aria-hidden="true"></div>
+		<div class="color-blob green-blob-two" aria-hidden="true"></div>
+		<div class="color-blob green-blob-three" aria-hidden="true"></div>
+		<div class="color-blob green-blob-four" aria-hidden="true"></div>
+		<div class="color-blob orange-blob-one" aria-hidden="true"></div>
+		<div class="color-blob orange-blob-two" aria-hidden="true"></div>
+		<div class="color-blob blue-blob" aria-hidden="true"></div>
+		<h1>Library of You</h1>
+		<p class="intro">Keep a personal reading list. Your books are saved in this browser.</p>
+
+		<div class="library-layout">
+			<aside class="shelf-sidebar" aria-label="Shelf tabs">
+				<h2>Shelves</h2>
+				<nav id="shelf-tabs" aria-label="Filter books by shelf"></nav>
+				<button id="create-shelf" class="create-shelf" type="button">Create shelf</button>
+			</aside>
+			<div class="library-content">
+		<section aria-label="Add a book">
+			<form id="book-form">
+				<label>Book name
+					<input id="book-name" name="name" type="text" maxlength="160" required>
+				</label>
+				<label>Page count
+					<input id="page-count" name="pages" type="number" min="1" step="1" required>
+				</label>
+				<label class="wide">Genres (up to 10, separated by commas)
+					<input id="genres" name="genres" type="text" placeholder="Fantasy, Adventure" aria-describedby="genre-help">
+				</label>
+				<small id="genre-help" class="wide">Leave blank if you don't want to add genres.</small>
+				<button class="wide" type="submit">Add book</button>
+			</form>
+		</section>
+
+		<div class="controls" aria-label="Book list options">
+			<label>Show
+				<select id="genre-filter"><option value="">All genres</option></select>
+			</label>
+			<label>Sort by
+				<select id="sort-order">
+					<option value="title">Alphabetical</option>
+					<option value="pages">Page count</option>
+				</select>
+			</label>
+			<div class="data-actions">
+				<button id="export-books" type="button">Export TXT</button>
+				<button id="import-books-button" type="button">Import TXT</button>
+				<input id="import-books" type="file" accept=".txt,text/plain" aria-label="Choose a books TXT file">
+			</div>
+			<div class="total" id="total-pages" aria-live="polite">Total pages: 0</div>
+		</div>
+
+		<div id="book-list" aria-live="polite"></div>
+			</div>
+		</div>
+	</main>
+
+	<script>
+		const STORAGE_KEY = 'basic-book-tracker-books';
+		const SHELVES_KEY = 'library-of-you-shelves';
+		const form = document.querySelector('#book-form');
+		const list = document.querySelector('#book-list');
+		const filter = document.querySelector('#genre-filter');
+		const shelfTabs = document.querySelector('#shelf-tabs');
+		const sort = document.querySelector('#sort-order');
+		const total = document.querySelector('#total-pages');
+		const importInput = document.querySelector('#import-books');
+		let books = loadBooks();
+		let shelves = loadShelves();
+		let selectedShelf = '';
+
+		function loadBooks() {
+			try {
+				const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+				return Array.isArray(saved) ? saved.filter(book =>
+					book && typeof book.id === 'string' && typeof book.name === 'string' &&
+					Number.isInteger(book.pages) && book.pages > 0 && Array.isArray(book.genres)
+				).map(book => ({
+					...book,
+					shelves: [...new Set((Array.isArray(book.shelves) ? book.shelves : [book.shelf])
+						.filter(shelf => typeof shelf === 'string' && shelf.trim() && shelf.trim() !== 'Unsorted')
+						.map(shelf => shelf.trim()))]
+				})) : [];
+			} catch {
+				return [];
+			}
+		}
+
+		function saveBooks() {
+			try {
+				localStorage.setItem(STORAGE_KEY, JSON.stringify(books));
+			} catch {
+				alert('Could not save your books. Check your browser storage settings.');
+			}
+		}
+
+		function loadShelves() {
+			try {
+				const saved = JSON.parse(localStorage.getItem(SHELVES_KEY) || '[]');
+				const storedShelves = Array.isArray(saved) ? saved.filter(shelf => typeof shelf === 'string' && shelf.trim() && shelf.trim() !== 'Unsorted').map(shelf => shelf.trim()) : [];
+				return [...new Set([...storedShelves, ...books.flatMap(book => book.shelves || [])])];
+			} catch {
+				return [...new Set(books.flatMap(book => book.shelves || []))];
+			}
+		}
+
+		function saveShelves() {
+			try {
+				localStorage.setItem(SHELVES_KEY, JSON.stringify(shelves));
+			} catch {
+				alert('Could not save your shelves. Check your browser storage settings.');
+			}
+		}
+
+		function updateGenreOptions() {
+			const selected = filter.value;
+			const genres = [...new Set(books.flatMap(book => book.genres))]
+				.sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }));
+			filter.replaceChildren(new Option('All genres', ''));
+			genres.forEach(genre => filter.add(new Option(genre, genre)));
+			if (genres.includes(selected)) filter.value = selected;
+		}
+
+		function updateShelfTabs() {
+			shelves.sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }));
+			if (selectedShelf && selectedShelf !== 'Unsorted' && !shelves.includes(selectedShelf)) selectedShelf = '';
+			shelfTabs.replaceChildren();
+			[['', 'All books'], ['Unsorted', 'Unsorted'], ...shelves.map(shelf => [shelf, shelf])].forEach(([value, label]) => {
+				const item = document.createElement('div');
+				item.className = 'shelf-item';
+				const tab = document.createElement('button');
+				tab.type = 'button';
+				tab.className = 'shelf-tab';
+				tab.textContent = label;
+				tab.setAttribute('aria-current', selectedShelf === value ? 'page' : 'false');
+				tab.addEventListener('click', () => {
+					selectedShelf = value;
+					render();
+				});
+				item.append(tab);
+				if (value && value !== 'Unsorted') {
+					const remove = document.createElement('button');
+					remove.type = 'button';
+					remove.className = 'delete-shelf';
+					remove.textContent = 'Delete';
+					remove.setAttribute('aria-label', `Delete ${label} shelf`);
+					remove.addEventListener('click', () => {
+						if (!confirm(`Delete the "${label}" shelf? Books on it will become unsorted if they have no other shelves.`)) return;
+						shelves = shelves.filter(shelf => shelf !== value);
+						books.forEach(book => {
+							book.shelves = book.shelves.filter(shelf => shelf !== value);
+						});
+						if (selectedShelf === value) selectedShelf = '';
+						saveShelves();
+						saveBooks();
+						render();
+					});
+					item.append(remove);
+				}
+				shelfTabs.append(item);
+			});
+		}
+
+		function render() {
+			updateGenreOptions();
+			updateShelfTabs();
+			const shown = books.filter(book =>
+				(!filter.value || book.genres.includes(filter.value)) &&
+				(!selectedShelf || (selectedShelf === 'Unsorted' ? !book.shelves.length : book.shelves.includes(selectedShelf)))
+			);
+			shown.sort((a, b) => sort.value === 'pages'
+				? a.pages - b.pages || a.name.localeCompare(b.name)
+				: a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }));
+			total.textContent = `Total pages: ${shown.reduce((sum, book) => sum + book.pages, 0)}`;
+			list.replaceChildren();
+
+			if (shown.length === 0) {
+				const empty = document.createElement('p');
+				empty.id = 'empty';
+				empty.textContent = books.length ? 'No books match these filters.' : 'No books yet. Add one above to get started.';
+				list.append(empty);
+				return;
+			}
+
+			shown.forEach(book => {
+				const card = document.createElement('article');
+				card.className = 'book';
+				const details = document.createElement('div');
+				details.className = 'book-details';
+				const title = document.createElement('h2');
+				title.textContent = book.name;
+				const info = document.createElement('p');
+				info.textContent = `${book.pages} pages${book.genres.length ? ` · ${book.genres.join(', ')}` : ''}`;
+				details.append(title, info);
+
+				const shelfControls = document.createElement('div');
+				shelfControls.className = 'book-shelves';
+				const assignedShelves = [...book.shelves];
+				const shelfOptions = [...shelves];
+				function addShelfSelect(value = '') {
+					const select = document.createElement('select');
+					select.setAttribute('aria-label', `Shelf for ${book.name}`);
+					select.add(new Option('Choose a shelf…', ''));
+					shelfOptions.forEach(shelf => {
+						const option = new Option(shelf, shelf);
+						option.disabled = assignedShelves.includes(shelf) && shelf !== value;
+						select.add(option);
+					});
+					select.value = value;
+					select.addEventListener('change', () => {
+						const next = [...assignedShelves];
+						if (value) next[next.indexOf(value)] = select.value;
+						else if (select.value) next.push(select.value);
+						book.shelves = [...new Set(next.filter(Boolean))];
+						if (select.value && !shelves.includes(select.value)) {
+							shelves.push(select.value);
+							saveShelves();
+						}
+						saveBooks();
+						render();
+					});
+					shelfControls.append(select);
+				}
+				assignedShelves.forEach(shelf => addShelfSelect(shelf));
+				addShelfSelect();
+				details.append(shelfControls);
+
+				const notes = document.createElement('div');
+				notes.className = 'book-notes';
+				const notesLabel = document.createElement('label');
+				notesLabel.textContent = 'Reading notes';
+				const notesInput = document.createElement('textarea');
+				notesInput.maxLength = 10000;
+				notesInput.setAttribute('aria-label', `Reading notes for ${book.name}`);
+				notesInput.placeholder = 'Write thoughts, quotes, or reminders…';
+				notesInput.value = typeof book.notes === 'string' ? book.notes : '';
+				const notesStatus = document.createElement('span');
+				notesStatus.className = 'book-notes-status';
+				let notesSaveTimer;
+				notesInput.addEventListener('input', () => {
+					clearTimeout(notesSaveTimer);
+					book.notes = notesInput.value;
+					notesStatus.textContent = 'Saving…';
+					notesSaveTimer = setTimeout(() => {
+						saveBooks();
+						notesStatus.textContent = 'Saved';
+					}, 300);
+				});
+				notesLabel.append(notesInput);
+				notes.append(notesLabel, notesStatus);
+				details.append(notes);
+
+				const remove = document.createElement('button');
+				remove.className = 'remove';
+				remove.type = 'button';
+				remove.textContent = 'Remove';
+				remove.setAttribute('aria-label', `Remove ${book.name}`);
+				remove.addEventListener('click', () => {
+					books = books.filter(item => item.id !== book.id);
+					saveBooks();
+					render();
+				});
+				card.append(details, remove);
+				list.append(card);
+			});
+		}
+
+		form.addEventListener('submit', event => {
+			event.preventDefault();
+			const name = document.querySelector('#book-name').value.trim();
+			const pages = Number(document.querySelector('#page-count').value);
+			const genres = [...new Set(document.querySelector('#genres').value.split(',')
+				.map(genre => genre.trim()).filter(Boolean))].slice(0, 10);
+			if (!name || !Number.isSafeInteger(pages) || pages < 1) return;
+
+			books.push({ id: crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random()}`, name, pages, genres, shelves: [] });
+			saveBooks();
+			form.reset();
+			render();
+			document.querySelector('#book-name').focus();
+		});
+
+		document.querySelector('#export-books').addEventListener('click', () => {
+			const data = {
+				format: 'library-of-you',
+				version: 1,
+				count: books.length,
+				books: books.map(({ name, pages, genres, shelves }) => ({ name, pages, genres, shelves: shelves || [] }))
+			};
+			const download = document.createElement('a');
+			download.href = URL.createObjectURL(new Blob([JSON.stringify(data, null, 2)], { type: 'text/plain;charset=utf-8' }));
+			download.download = 'library-of-you-books.txt';
+			download.click();
+			URL.revokeObjectURL(download.href);
+		});
+
+		document.querySelector('#import-books-button').addEventListener('click', () => importInput.click());
+		importInput.addEventListener('change', async () => {
+			const file = importInput.files[0];
+			if (!file) return;
+			try {
+				const data = JSON.parse(await file.text());
+				if (!data || data.format !== 'library-of-you' || data.version !== 1 ||
+					!Array.isArray(data.books) || data.count !== data.books.length) {
+					throw new Error('This is not a valid Library of You TXT export.');
+				}
+				const imported = data.books.map(book => {
+					if (!book || typeof book.name !== 'string' || !book.name.trim() || book.name.trim().length > 160 ||
+						!Number.isSafeInteger(book.pages) || book.pages < 1 || !Array.isArray(book.genres) ||
+						book.genres.length > 10 || book.genres.some(genre => typeof genre !== 'string' || !genre.trim()) ||
+						(book.shelf !== undefined && (typeof book.shelf !== 'string' || book.shelf.trim().length > 80)) ||
+						(book.shelves !== undefined && (!Array.isArray(book.shelves) || book.shelves.length > 50 ||
+							book.shelves.some(shelf => typeof shelf !== 'string' || !shelf.trim() || shelf.trim().length > 80)))) {
+						throw new Error('The TXT file contains invalid book details.');
+					}
+					return {
+						id: crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random()}`,
+						name: book.name.trim(),
+						pages: book.pages,
+						genres: [...new Set(book.genres.map(genre => genre.trim()))],
+						shelves: [...new Set((book.shelves || (book.shelf && book.shelf !== 'Unsorted' ? [book.shelf] : []))
+							.map(shelf => shelf.trim()))]
+					};
+				});
+				books.push(...imported);
+				saveBooks();
+				render();
+				alert(`Imported ${imported.length} book${imported.length === 1 ? '' : 's'}.`);
+			} catch (error) {
+				alert(error instanceof SyntaxError
+					? 'Could not read the TXT file. Make sure it is a Library of You export.'
+					: error.message);
+			} finally {
+				importInput.value = '';
+			}
+		});
+
+		filter.addEventListener('change', render);
+		sort.addEventListener('change', render);
+		document.querySelector('#create-shelf').addEventListener('click', () => {
+			const name = prompt('Name the new shelf:')?.trim();
+			if (!name) {
+				alert('Shelf name cannot be empty.');
+				return;
+			}
+			if (name.length > 80) {
+				alert('Shelf name must be 80 characters or fewer.');
+				return;
+			}
+			if (name.toLowerCase() === 'unsorted') {
+				alert('Shelf name cannot be "Unsorted".');
+				return;
+			}
+			if (shelves.some(shelf => shelf.toLowerCase() === name.toLowerCase())) {
+				alert('A shelf with this name already exists.');
+				return;
+			}
+			shelves.push(name);
+			saveShelves();
+			selectedShelf = name;
+			render();
+		});
+
+		const tabStyles = document.createElement('style');
+		tabStyles.textContent = `
+			.app-tabs { display: flex; gap: 8px; margin: 0 0 18px; }
+			.app-tab { flex: 1; }
+			.app-tab[aria-selected="true"] { background: linear-gradient(105deg, #7136c8, #a04de0); border-color: #b68bff; }
+			.tab-panel[hidden] { display: none !important; }
+			.web-controls { display: flex; gap: 8px; margin-bottom: 10px; }
+			.web-controls input { flex: 1; min-width: 0; }
+			.web-controls button { flex: 0 0 auto; }
+			.web-frame-wrap { background: #100c17; border: 1px solid #39284d; border-radius: 12px; overflow: hidden; }
+			.web-frame-wrap iframe { display: block; width: 100%; height: min(70vh, 720px); border: 0; background: white; }
+			.web-frame-wrap:fullscreen { width: 100vw; height: 100vh; border: 0; border-radius: 0; background: #100c17; }
+			.web-frame-wrap:fullscreen iframe { width: 100%; height: 100%; }
+			.web-frame-wrap.webkit-fullscreen { width: 100vw; height: 100vh; border: 0; border-radius: 0; }
+			.web-frame-wrap.webkit-fullscreen iframe { width: 100%; height: 100%; }
+			.tboi-gate { max-width: 320px; margin: 0 auto; text-align: center; }
+			.tboi-gate h2 { margin-top: 0; }
+			.calculator-display { width: 100%; margin-bottom: 10px; text-align: right; font-size: 1.5rem; }
+			.calculator-keys { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+			.calculator-keys button { min-height: 48px; }
+			.calculator-message { min-height: 1.5em; color: #ffb6b6; }
+			@media (max-width: 560px) { .web-controls { flex-wrap: wrap; } .web-controls input { flex-basis: 100%; } }
+		`;
+		document.head.append(tabStyles);
+
+		const main = document.querySelector('main');
+		const intro = main.querySelector('.intro');
+		const tabs = document.createElement('nav');
+		tabs.className = 'app-tabs';
+		tabs.setAttribute('aria-label', 'Main sections');
+
+		const libraryLayout = document.querySelector('.library-layout');
+		const libraryPanel = document.createElement('section');
+		libraryPanel.className = 'tab-panel';
+		libraryPanel.setAttribute('aria-label', 'Library');
+		libraryLayout.replaceWith(libraryPanel);
+		libraryPanel.append(libraryLayout);
+
+		const webPanel = document.createElement('section');
+		webPanel.className = 'tab-panel';
+		webPanel.hidden = true;
+		webPanel.setAttribute('aria-label', 'Web browser');
+		webPanel.innerHTML = `
+			<form class="web-controls">
+				<input id="web-url" type="text" value="https://" aria-label="Website URL" placeholder="Enter a website URL">
+				<button id="load-web-url" type="submit">Load</button>
+				<button id="web-fullscreen" type="button">Full screen</button>
+			</form>
+			<div class="web-frame-wrap" id="web-frame-wrap">
+				<iframe id="web-frame" title="Web browser" src="about:blank"></iframe>
+			</div>`;
+
+		const notesPanel = document.createElement('section');
+		notesPanel.className = 'tab-panel';
+		notesPanel.hidden = true;
+		notesPanel.setAttribute('aria-label', 'Reading notes');
+		notesPanel.innerHTML = `
+			<div class="reading-notes">
+				<label for="reading-notes">Reading notes
+					<textarea id="reading-notes" maxlength="10000" placeholder="Write thoughts, quotes, or reminders..."></textarea>
+				</label>
+				<div class="notes-footer"><span id="notes-status" aria-live="polite"></span><button id="clear-notes" type="button">Clear notes</button></div>
+			</div>`;
+
+		const tboiPanel = document.createElement('section');
+		tboiPanel.className = 'tab-panel';
+		tboiPanel.hidden = true;
+		tboiPanel.setAttribute('aria-label', 'Calculator');
+		tboiPanel.innerHTML = `
+			<style>
+				.tboi-gate { width: 280px; max-width: 100%; padding: 16px; box-sizing: border-box; border: 1px solid #49345f; border-radius: 14px; background: #171020; box-shadow: 0 14px 40px rgba(0,0,0,.35); }
+				.tboi-gate h2 { margin: 0 0 10px; font-size: 1.05rem; text-align: left; }
+				.calculator-display { height: 58px; box-sizing: border-box; margin: 0 0 10px; font-size: 2rem; line-height: 58px; background: #0d0a12; border-color: #49345f; }
+				.calculator-keys { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+				.calculator-keys button { min-height: 48px; padding: 8px; background: #2a2035; border-color: #4e3a62; }
+				.calculator-keys button[data-action="operator"] { background: linear-gradient(105deg, #7136c8, #a04de0); }
+				.calculator-keys button[data-action="equals"] { background: #4b8a57; border-color: #74b881; }
+				.calculator-keys button[data-action="clear"] { background: #7d3b4c; border-color: #b45b70; }
+				.calculator-keys button[data-action="back"] { background: #5a4b66; }
+				.calculator-message { min-height: 0; margin: 0; }
+			</style>
+			<div class="tboi-gate" id="tboi-gate">
+				<h2>Calculator</h2>
+				<input class="calculator-display" id="tboi-code-display" type="text" aria-label="Calculator display" readonly value="0">
+				<div class="calculator-keys" aria-label="Calculator keypad">
+					<button type="button" data-action="clear">C</button>
+					<button type="button" data-action="back">⌫</button>
+					<button type="button" data-action="operator" data-operator="/">÷</button>
+					<button type="button" data-action="operator" data-operator="*">×</button>
+					<button type="button" data-digit="7">7</button><button type="button" data-digit="8">8</button><button type="button" data-digit="9">9</button>
+					<button type="button" data-action="operator" data-operator="-">−</button>
+					<button type="button" data-digit="4">4</button><button type="button" data-digit="5">5</button><button type="button" data-digit="6">6</button>
+					<button type="button" data-action="operator" data-operator="+">+</button>
+					<button type="button" data-digit="1">1</button><button type="button" data-digit="2">2</button><button type="button" data-digit="3">3</button>
+					<button type="button" data-action="equals">=</button>
+					<button type="button" data-action="decimal">.</button><button type="button" data-digit="0">0</button><button type="button" data-action="submit">Enter</button>
+				</div>
+				<p class="calculator-message" id="tboi-code-message" aria-live="polite"></p>
+			</div>
+			<div class="web-controls" id="tboi-controls" hidden>
+				<button id="tboi-fullscreen" type="button">Full screen</button>
+			</div>
+			<div class="web-frame-wrap" id="tboi-frame-wrap"></div>`;
+
+		const tboiCodeDisplay = tboiPanel.querySelector('#tboi-code-display');
+		let calculatorStored = null;
+		let calculatorOperator = null;
+		let calculatorWaiting = false;
+
+		function formatCalculatorResult(value) {
+			if (!Number.isFinite(value)) return 'Error';
+			return String(Number.parseFloat(value.toPrecision(12))).replace('-0', '0');
+		}
+
+		function calculate(valueA, valueB, operator) {
+			if (operator === '+') return valueA + valueB;
+			if (operator === '-') return valueA - valueB;
+			if (operator === '*') return valueA * valueB;
+			if (operator === '/') return valueB === 0 ? NaN : valueA / valueB;
+			return valueB;
+		}
+
+		function openCalculatorIframe(url = 'https://tboi.online/', title = 'TBOI Online') {
+			tboiPanel.querySelector('#tboi-gate').hidden = true;
+			tboiPanel.querySelector('#tboi-controls').hidden = false;
+			const frame = document.createElement('iframe');
+			frame.id = 'tboi-frame';
+			frame.title = title;
+			frame.src = url;
+			const frameWrap = tboiPanel.querySelector('#tboi-frame-wrap');
+			frameWrap.replaceChildren(frame);
+			const back = tboiPanel.querySelector('#tboi-code-list-back');
+			if (back) back.remove();
+		}
+
+		function openCodeList() {
+			tboiPanel.querySelector('#tboi-gate').hidden = true;
+			const controls = tboiPanel.querySelector('#tboi-controls');
+			controls.hidden = false;
+			if (!controls.querySelector('#tboi-code-list-back')) {
+				const back = document.createElement('button');
+				back.type = 'button';
+				back.id = 'tboi-code-list-back';
+				back.textContent = 'Back to calculator';
+				back.addEventListener('click', () => {
+					back.remove();
+					controls.hidden = true;
+					tboiPanel.querySelector('#tboi-frame-wrap').replaceChildren();
+					tboiPanel.querySelector('#tboi-gate').hidden = false;
+					tboiCodeDisplay.value = '0';
+					calculatorStored = null;
+					calculatorOperator = null;
+					calculatorWaiting = false;
+				});
+				controls.append(back);
+			}
+			const codeList = document.createElement('div');
+			codeList.style.cssText = 'padding:18px; max-width:320px; margin:0 auto;';
+			codeList.innerHTML = '<h2 style="margin-top:0">All codes</h2><p><strong>2015</strong> — TBOI Online</p><p><strong>72</strong> — MCSM Web</p><p><strong>2020</strong> — BPAC</p><p><strong>142</strong> — TF2</p><p><strong>123</strong> — This code list</p>'; 
+			tboiPanel.querySelector('#tboi-frame-wrap').replaceChildren(codeList);
+		}
+
+		tboiPanel.querySelector('.calculator-keys').addEventListener('click', event => {
+			const button = event.target.closest('button');
+			if (!button) return;
+			const message = tboiPanel.querySelector('#tboi-code-message');
+
+			if (button.dataset.digit !== undefined) {
+				const digit = button.dataset.digit;
+				if (calculatorWaiting || tboiCodeDisplay.value === '0' || tboiCodeDisplay.value === 'Error') {
+					tboiCodeDisplay.value = digit;
+					calculatorWaiting = false;
+				} else if (tboiCodeDisplay.value.length < 16) {
+					tboiCodeDisplay.value += digit;
+				}
+			} else if (button.dataset.action === 'decimal') {
+				if (calculatorWaiting) {
+					tboiCodeDisplay.value = '0.';
+					calculatorWaiting = false;
+				} else if (!tboiCodeDisplay.value.includes('.')) {
+					tboiCodeDisplay.value += '.';
+				}
+			} else if (button.dataset.action === 'clear') {
+				tboiCodeDisplay.value = '0';
+				calculatorStored = null;
+				calculatorOperator = null;
+				calculatorWaiting = false;
+				message.textContent = '';
+			} else if (button.dataset.action === 'back') {
+				tboiCodeDisplay.value = tboiCodeDisplay.value.length > 1
+					? tboiCodeDisplay.value.slice(0, -1)
+					: '0';
+			} else if (button.dataset.action === 'operator') {
+				const nextValue = Number(tboiCodeDisplay.value);
+				if (calculatorStored !== null && calculatorOperator && !calculatorWaiting) {
+					tboiCodeDisplay.value = formatCalculatorResult(calculate(calculatorStored, nextValue, calculatorOperator));
+				}
+				calculatorStored = Number(tboiCodeDisplay.value);
+				calculatorOperator = button.dataset.operator;
+				calculatorWaiting = true;
+				message.textContent = '';
+			} else if (button.dataset.action === 'equals' || button.dataset.action === 'submit') {
+				if (tboiCodeDisplay.value === '123') {
+					openCodeList();
+					return;
+				}
+				if (tboiCodeDisplay.value === '72') {
+					openCalculatorIframe('https://mcsm-web.pages.dev/', 'MCSM Web');
+					return;
+				}
+				if (tboiCodeDisplay.value === '2015') {
+					openCalculatorIframe();
+					return;
+				}
+				if (tboiCodeDisplay.value === '2020') {
+					openCalculatorIframe('https://wasm.rip/files/bpac/index.html', 'BPAC');
+					return;
+				}
+				if (tboiCodeDisplay.value === '142') {
+					openCalculatorIframe('https://tf2.riddy.workers.dev/', 'TF2');
+					return;
+				}
+				if (calculatorStored !== null && calculatorOperator) {
+					const result = calculate(calculatorStored, Number(tboiCodeDisplay.value), calculatorOperator);
+					tboiCodeDisplay.value = formatCalculatorResult(result);
+					calculatorStored = null;
+					calculatorOperator = null;
+					calculatorWaiting = true;
+				}
+			}
+		});
+
+		document.addEventListener('keydown', event => {
+			if (tboiPanel.hidden) return;
+			if (/^[0-9]$/.test(event.key)) {
+				event.preventDefault();
+				const digit = event.key;
+				if (calculatorWaiting || tboiCodeDisplay.value === '0' || tboiCodeDisplay.value === 'Error') {
+					tboiCodeDisplay.value = digit;
+					calculatorWaiting = false;
+				} else if (tboiCodeDisplay.value.length < 16) {
+					tboiCodeDisplay.value += digit;
+				}
+			}
+			if (event.key === 'Enter' && ['123', '2015', '72', '2020', '142'].includes(tboiCodeDisplay.value)) {
+				event.preventDefault();
+				const frameWrap = tboiPanel.querySelector('#tboi-frame-wrap');
+				if (tboiCodeDisplay.value === '123') {
+					openCodeList();
+				} else if (!frameWrap.querySelector('iframe')) {
+					if (tboiCodeDisplay.value === '72') openCalculatorIframe('https://mcsm-web.pages.dev/', 'MCSM Web');
+					else if (tboiCodeDisplay.value === '2020') openCalculatorIframe('https://wasm.rip/files/bpac/index.html', 'BPAC');
+					else if (tboiCodeDisplay.value === '142') openCalculatorIframe('https://tf2.riddy.workers.dev/', 'TF2');
+					else openCalculatorIframe();
+				}
+			}
+			if (event.key === 'Backspace') {
+				event.preventDefault();
+				tboiCodeDisplay.value = tboiCodeDisplay.value.length > 1
+					? tboiCodeDisplay.value.slice(0, -1)
+					: '0';
+			}
+		});
+
+		const timerPanel = document.createElement('section');
+		timerPanel.className = 'tab-panel';
+		timerPanel.hidden = true;
+		timerPanel.setAttribute('aria-label', 'Reading timer');
+		timerPanel.innerHTML = `
+			<style>
+				.reading-timer { max-width: 360px; margin: 0 auto; text-align: center; }
+				.reading-timer-display { font-size: 3.5rem; font-variant-numeric: tabular-nums; margin: 8px 0 14px; }
+				.reading-timer-presets { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 10px; }
+				.reading-timer-actions { display: flex; gap: 8px; }
+				.reading-timer-actions button { flex: 1; }
+				.reading-timer-presets button[aria-pressed="true"] { outline: 2px solid #b68bff; }
+				.reading-timer-custom { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px; }
+				.reading-timer-custom label { min-width: 0; }
+				.reading-timer-custom input { width: 100%; box-sizing: border-box; }
+			</style>
+			<div class="reading-timer">
+				<h2>Reading timer</h2>
+				<div class="reading-timer-presets" aria-label="Timer duration">
+					<button type="button" data-minutes="15" aria-pressed="false">15 min</button>
+					<button type="button" data-minutes="25" aria-pressed="true">25 min</button>
+					<button type="button" data-minutes="45" aria-pressed="false">45 min</button>
+				</div>
+				<div class="reading-timer-custom">
+					<label>Minutes
+						<input id="reading-timer-minutes" type="number" min="0" max="999" step="1" value="25">
+					</label>
+					<label>Seconds
+						<input id="reading-timer-seconds" type="number" min="0" max="59" step="1" value="0">
+					</label>
+				</div>
+				<div class="reading-timer-display" id="reading-timer-display" role="timer" aria-live="off">25:00</div>
+				<div class="reading-timer-actions">
+					<button type="button" id="reading-timer-toggle">Start</button>
+					<button type="button" id="reading-timer-reset">Reset</button>
+				</div>
+			</div>`;
+
+		const tabItems = [
+			['Library', libraryPanel],
+			['Reading notes', notesPanel],
+			['Reading timer', timerPanel],
+			['Web iframe', webPanel],
+			['Calculator', tboiPanel]
+		];
+
+		tabItems.forEach(([label, panel], index) => {
+			const tab = document.createElement('button');
+			tab.type = 'button';
+			tab.className = 'app-tab';
+			tab.textContent = label;
+			tab.setAttribute('role', 'tab');
+			tab.setAttribute('aria-selected', index === 0 ? 'true' : 'false');
+			tab.addEventListener('click', () => {
+				tabItems.forEach(([, itemPanel]) => itemPanel.hidden = true);
+				tabs.querySelectorAll('.app-tab').forEach(item => item.setAttribute('aria-selected', 'false'));
+				panel.hidden = false;
+				tab.setAttribute('aria-selected', 'true');
+			});
+			tabs.append(tab);
+		});
+
+		const timerDisplay = timerPanel.querySelector('#reading-timer-display');
+		const timerToggle = timerPanel.querySelector('#reading-timer-toggle');
+		const timerReset = timerPanel.querySelector('#reading-timer-reset');
+		const timerMinutesInput = timerPanel.querySelector('#reading-timer-minutes');
+		const timerSecondsInput = timerPanel.querySelector('#reading-timer-seconds');
+		let timerDuration = 25 * 60;
+		let timerRemaining = timerDuration;
+		let timerInterval = null;
+		let timerEndTime = 0;
+
+		function updateTimerDisplay() {
+			const minutes = Math.floor(timerRemaining / 60);
+			const seconds = timerRemaining % 60;
+			timerDisplay.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+			document.title = timerInterval ? `${timerDisplay.textContent} - Library of You` : 'Book Tracker';
+		}
+
+		function stopTimer() {
+			clearInterval(timerInterval);
+			timerInterval = null;
+			timerToggle.textContent = 'Start';
+			updateTimerDisplay();
+		}
+
+		function updateCustomTimer() {
+			const minutes = Number(timerMinutesInput.value);
+			const seconds = Number(timerSecondsInput.value);
+			if (timerMinutesInput.value === '' || timerSecondsInput.value === '' ||
+				!Number.isInteger(minutes) || !Number.isInteger(seconds)) return;
+
+			const safeMinutes = Math.min(999, Math.max(0, minutes));
+			const safeSeconds = Math.min(59, Math.max(0, seconds));
+			timerMinutesInput.value = safeMinutes;
+			timerSecondsInput.value = safeSeconds;
+			if (timerInterval) stopTimer();
+			timerDuration = safeMinutes * 60 + safeSeconds;
+			timerRemaining = timerDuration;
+			timerPanel.querySelectorAll('[data-minutes]').forEach(button => {
+				button.setAttribute('aria-pressed', String(safeSeconds === 0 && safeMinutes === Number(button.dataset.minutes)));
+			});
+			updateTimerDisplay();
+		}
+
+		timerMinutesInput.addEventListener('input', updateCustomTimer);
+		timerSecondsInput.addEventListener('input', updateCustomTimer);
+
+		timerPanel.querySelectorAll('[data-minutes]').forEach(button => {
+			button.addEventListener('click', () => {
+				stopTimer();
+				const minutes = Number(button.dataset.minutes);
+				timerMinutesInput.value = minutes;
+				timerSecondsInput.value = 0;
+				timerDuration = minutes * 60;
+				timerRemaining = timerDuration;
+				timerPanel.querySelectorAll('[data-minutes]').forEach(item => item.setAttribute('aria-pressed', String(item === button)));
+				updateTimerDisplay();
+			});
+		});
+
+		timerToggle.addEventListener('click', () => {
+			if (timerInterval) {
+				stopTimer();
+				return;
+			}
+			updateCustomTimer();
+			if (timerDuration <= 0) return;
+			if (timerRemaining <= 0) timerRemaining = timerDuration;
+			timerEndTime = Date.now() + timerRemaining * 1000;
+			timerToggle.textContent = 'Pause';
+			timerInterval = setInterval(() => {
+				timerRemaining = Math.max(0, Math.ceil((timerEndTime - Date.now()) / 1000));
+				updateTimerDisplay();
+				if (timerRemaining === 0) {
+					stopTimer();
+					alert('Reading timer complete. Take a break!');
+				}
+			}, 250);
+			updateTimerDisplay();
+		});
+
+		timerReset.addEventListener('click', () => {
+			stopTimer();
+			timerRemaining = timerDuration;
+			updateTimerDisplay();
+		});
+
+		const notesTextarea = notesPanel.querySelector('#reading-notes');
+		const notesStatus = notesPanel.querySelector('#notes-status');
+		const NOTES_KEY = 'library-of-you-reading-notes';
+		try {
+			notesTextarea.value = localStorage.getItem(NOTES_KEY) || '';
+		} catch {
+			notesTextarea.value = '';
+		}
+		notesTextarea.style.cssText = 'width:100%; min-height:280px; resize:vertical; box-sizing:border-box; padding:12px; color:#f4efff; background:#100c17; border:1px solid #49345f; border-radius:8px; font:inherit;';
+		let notesSaveTimer;
+		notesTextarea.addEventListener('input', () => {
+			clearTimeout(notesSaveTimer);
+			notesStatus.textContent = 'Saving…';
+			notesSaveTimer = setTimeout(() => {
+				try {
+					localStorage.setItem(NOTES_KEY, notesTextarea.value);
+					notesStatus.textContent = 'Saved';
+				} catch {
+					notesStatus.textContent = 'Could not save';
+				}
+			}, 300);
+		});
+		notesPanel.querySelector('#clear-notes').addEventListener('click', () => {
+			if (!confirm('Clear all reading notes?')) return;
+			clearTimeout(notesSaveTimer);
+			notesTextarea.value = '';
+			try {
+				localStorage.removeItem(NOTES_KEY);
+				notesStatus.textContent = 'Notes cleared';
+			} catch {
+				notesStatus.textContent = 'Could not clear notes';
+			}
+			notesTextarea.focus();
+		});
+
+		intro.after(tabs, libraryPanel, notesPanel, timerPanel, webPanel, tboiPanel);
+
+		const webUrl = webPanel.querySelector('#web-url');
+		const webFrame = webPanel.querySelector('#web-frame');
+		webPanel.querySelector('.web-controls').addEventListener('submit', event => {
+			event.preventDefault();
+			let url = webUrl.value.trim();
+			if (!/^https?:\/\//i.test(url)) url = `https://${url}`;
+			try {
+				const parsed = new URL(url);
+				if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') throw new Error();
+				webFrame.src = parsed.href;
+				webUrl.value = parsed.href;
+			} catch {
+				alert('Enter a valid http or https URL.');
+			}
+		});
+
+		async function toggleFullscreen(target) {
+			try {
+				if (document.fullscreenElement) {
+					await document.exitFullscreen();
+				} else if (target.requestFullscreen) {
+					await target.requestFullscreen();
+				} else if (target.webkitRequestFullscreen) {
+					target.webkitRequestFullscreen();
+					target.classList.add('webkit-fullscreen');
+				} else {
+					alert('Full screen is not supported by this browser.');
+				}
+			} catch {
+				alert('Full screen could not be opened.');
+			}
+		}
+
+		webPanel.querySelector('#web-fullscreen').addEventListener('click', () => {
+			toggleFullscreen(webPanel.querySelector('#web-frame-wrap'));
+		});
+		tboiPanel.querySelector('#tboi-fullscreen').addEventListener('click', () => {
+			toggleFullscreen(tboiPanel.querySelector('#tboi-frame-wrap'));
+		});
+
+		const solitaireStyles = document.createElement('style');
+		solitaireStyles.textContent = `
+			.solitaire-launcher { position: fixed; right: 18px; bottom: 18px; z-index: 1000; padding: 10px 14px; }
+			.solitaire-widget { position: fixed; right: 18px; bottom: 18px; z-index: 1001; width: min(760px, calc(100vw - 36px)); height: min(560px, calc(100vh - 36px)); display: none; overflow: hidden; border: 1px solid #49345f; border-radius: 14px; background: #102519; box-shadow: 0 18px 50px rgba(0,0,0,.55); }
+			.solitaire-widget.open { display: flex; flex-direction: column; }
+			.solitaire-header { flex: 0 0 auto; display: flex; align-items: center; gap: 8px; padding: 8px 10px; background: #171020; }
+			.solitaire-header strong { margin-right: auto; }
+			.solitaire-header button { padding: 7px 10px; }
+			.solitaire-board { flex: 1; min-height: 0; display: grid; grid-template-columns: repeat(7, minmax(58px, 1fr)); grid-template-rows: 86px 1fr; gap: 10px; padding: 12px; overflow: auto; background: radial-gradient(circle at 50% 20%, #1b5733, #0e311f 72%); }
+			.sol-top-row { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; }
+			.sol-tableau { display: grid; grid-template-rows: repeat(19, 22px); align-content: start; }
+			.sol-card { position: relative; width: 100%; height: 78px; border: 1px solid #5b4b69; border-radius: 7px; background: #f7f3eb; color: #171020; box-shadow: 0 3px 8px rgba(0,0,0,.28); user-select: none; }
+			.sol-tableau .sol-card { height: 78px; }
+			.sol-card.red { color: #bd2438; }
+			.sol-card.back { background: repeating-linear-gradient(45deg, #5838a0 0 7px, #6f50b6 7px 14px); border-color: #b68bff; }
+			.sol-card.selected { outline: 3px solid #ffc64a; outline-offset: -2px; }
+			.sol-card.empty { background: rgba(0,0,0,.12); border: 1px dashed rgba(255,255,255,.38); box-shadow: none; }
+			.sol-rank { position: absolute; top: 5px; left: 6px; font-weight: 800; line-height: 1; }
+			.sol-suit { position: absolute; right: 6px; bottom: 5px; font-size: 1.25rem; }
+			.sol-pile { position: relative; height: 78px; }
+			.solitaire-widget:fullscreen { width: 100vw; height: 100vh; max-width: none; max-height: none; border: 0; border-radius: 0; }
+			.solitaire-widget:fullscreen .solitaire-board { grid-template-rows: 112px 1fr; grid-template-columns: repeat(7, minmax(90px, 1fr)); }
+			.solitaire-widget:fullscreen .sol-tableau { grid-template-rows: repeat(19, 28px); }
+			.solitaire-widget:fullscreen .sol-card, .solitaire-widget:fullscreen .sol-pile { height: 105px; }
+			@media (max-width: 620px) { .solitaire-widget { left: 8px; right: 8px; bottom: 8px; width: auto; } .solitaire-board { gap: 5px; padding: 7px; grid-template-columns: repeat(7, minmax(42px, 1fr)); } .sol-top-row { gap: 5px; } }
+		`;
+		document.head.append(solitaireStyles);
+
+		const solitaireLauncher = document.createElement('button');
+		solitaireLauncher.type = 'button';
+		solitaireLauncher.className = 'solitaire-launcher';
+		solitaireLauncher.textContent = 'Solitaire';
+		document.body.append(solitaireLauncher);
+
+		const solitaireWidget = document.createElement('section');
+		solitaireWidget.className = 'solitaire-widget';
+		solitaireWidget.setAttribute('aria-label', 'Solitaire game');
+		solitaireWidget.innerHTML = `
+			<div class="solitaire-header">
+				<strong>Solitaire game header</strong>
+				<button type="button" id="solitaire-new">New game</button>
+				<button type="button" id="solitaire-fullscreen">Full screen</button>
+				<button type="button" id="solitaire-close">Close</button>
+			</div>
+			<div class="solitaire-board" id="solitaire-board"></div>`;
+		document.body.append(solitaireWidget);
+
+		solitaireLauncher.addEventListener('click', () => solitaireWidget.classList.add('open'));
+		solitaireWidget.querySelector('#solitaire-close').addEventListener('click', () => solitaireWidget.classList.remove('open'));
+		solitaireWidget.querySelector('#solitaire-fullscreen').addEventListener('click', () => {
+			(solitaireWidget.requestFullscreen || solitaireWidget.webkitRequestFullscreen)?.call(solitaireWidget);
+		});
+
+		const suits = ['♠', '♥', '♦', '♣'];
+		const ranks = ['A','2','3','4','5','6','7','8','9','10','J','Q','K'];
+		let stock = [], waste = [], foundations = [[],[],[],[]], tableau = [[],[],[],[],[],[],[]], selection = null;
+
+		function makeDeck() {
+			const deck = [];
+			suits.forEach((suit, suitIndex) => ranks.forEach((rank, rankIndex) => deck.push({ rank, rankIndex, suit, suitIndex, faceUp: false })));
+			for (let i = deck.length - 1; i > 0; i--) {
+				const j = Math.floor(Math.random() * (i + 1));
+				[deck[i], deck[j]] = [deck[j], deck[i]];
+			}
+			return deck;
+		}
+
+		function startSolitaire() {
+			const deck = makeDeck();
+			stock = deck; waste = []; foundations = [[],[],[],[]]; tableau = [[],[],[],[],[],[],[]]; selection = null;
+			for (let column = 0; column < 7; column++) {
+				for (let row = 0; row <= column; row++) tableau[column].push(stock.pop());
+				tableau[column][tableau[column].length - 1].faceUp = true;
+			}
+			renderSolitaire();
+		}
+
+		function cardElement(card, source, index, cardIndex) {
+			const element = document.createElement('button');
+			element.type = 'button';
+			element.className = `sol-card${card && (card.suit === '♥' || card.suit === '♦') ? ' red' : ''}${card && !card.faceUp ? ' back' : ''}`;
+			if (!card || !card.faceUp) {
+				element.setAttribute('aria-label', 'Face-down card');
+			} else {
+				element.innerHTML = `<span class="sol-rank">${card.rank}</span><span class="sol-suit">${card.suit}</span>`;
+				element.setAttribute('aria-label', `${card.rank} of ${card.suit}`);
+			}
+			if (selection && selection.source === source && selection.index === index && selection.cardIndex === cardIndex) element.classList.add('selected');
+			element.addEventListener('click', event => {
+				event.stopPropagation();
+				selectSolitaireCard(source, index, cardIndex);
+			});
+			return element;
+		}
+
+		function emptyElement(label, action) {
+			const element = document.createElement('button');
+			element.type = 'button';
+			element.className = 'sol-card empty';
+			element.setAttribute('aria-label', label);
+			element.addEventListener('click', event => { event.stopPropagation(); action(); });
+			return element;
+		}
+
+		// Removed redundant canMoveToFoundation function
+
+		function selectSolitaireCard(source, index, cardIndex) {
+			if (source === 'tableau') {
+				const pile = tableau[index];
+				const card = pile[cardIndex];
+				if (card && !card.faceUp) {
+					if (cardIndex === pile.length - 1) card.faceUp = true;
+					selection = null;
+					renderSolitaire();
+					return;
+				}
+			}
+			if (selection) {
+				trySolitaireMove(source, index);
+				return;
+			}
+			if (source === 'waste' && waste.length) selection = { source, index, cardIndex: waste.length - 1 };
+			else if (source === 'foundation' && foundations[index].length) selection = { source, index, cardIndex: foundations[index].length - 1 };
+			else if (source === 'tableau' && tableau[index].length && tableau[index][cardIndex].faceUp) selection = { source, index, cardIndex };
+			renderSolitaire();
+		}
+
+		function trySolitaireMove(destination, destIndex) {
+			const moving = getMovingCards();
+			if (!moving.length) { selection = null; renderSolitaire(); return; }
+			if (destination === 'foundation') {
+				if (moving.length !== 1) { selection = null; renderSolitaire(); return; }
+				const card = moving[0];
+				const pile = foundations[destIndex];
+				const valid = card.suitIndex === destIndex && (pile.length ? card.rankIndex === pile[pile.length - 1].rankIndex + 1 : card.rankIndex === 0);
+				if (!valid) { selection = null; renderSolitaire(); return; }
+				pile.push(card); removeSelectedCards();
+			} else if (destination === 'tableau') {
+				const pile = tableau[destIndex];
+				const top = pile[pile.length - 1];
+				const valid = !top ? moving[0].rankIndex === 12 : top.faceUp && top.rankIndex === moving[0].rankIndex + 1 && top.suitIndex % 2 !== moving[0].suitIndex % 2;
+				if (!valid) { selection = null; renderSolitaire(); return; }
+				pile.push(...moving); removeSelectedCards();
+			}
+			selection = null;
+			renderSolitaire();
+		}
+
+		function getMovingCards() {
+			if (!selection) return [];
+			if (selection.source === 'waste') return waste.length ? [waste[waste.length - 1]] : [];
+			if (selection.source === 'foundation') return foundations[selection.index].length ? [foundations[selection.index][foundations[selection.index].length - 1]] : [];
+			return tableau[selection.index].slice(selection.cardIndex);
+		}
+
+		function removeSelectedCards() {
+			if (!selection) return;
+			if (selection.source === 'waste') waste.pop();
+			else if (selection.source === 'foundation') foundations[selection.index].pop();
+			else tableau[selection.index].splice(selection.cardIndex);
+		}
+
+
+		function renderSolitaire() {
+			const board = solitaireWidget.querySelector('#solitaire-board');
+			board.replaceChildren();
+			const top = document.createElement('div');
+			top.className = 'sol-top-row';
+
+			const stockPile = document.createElement('div');
+			stockPile.className = 'sol-pile';
+			stockPile.append(stock.length
+				? cardElement({ faceUp: false }, 'stock', 0, 0)
+				: emptyElement('Recycle waste pile', () => {}));
+			stockPile.firstChild.addEventListener('click', event => {
+				event.stopPropagation();
+				selection = null;
+				if (stock.length) waste.push({...stock.pop(), faceUp: true});
+				else if (waste.length) { stock = waste.reverse().map(card => ({...card, faceUp: false})); waste = []; }
+				renderSolitaire();
+			});
+			top.append(stockPile);
+
+			const wastePile = document.createElement('div');
+			wastePile.className = 'sol-pile';
+			wastePile.append(waste.length ? cardElement(waste[waste.length - 1], 'waste', 0, waste.length - 1) : emptyElement('Empty waste pile', () => {}));
+			top.append(wastePile);
+
+			for (let i = 0; i < 4; i++) {
+				const pile = document.createElement('div');
+				pile.className = 'sol-pile';
+				if (foundations[i].length) pile.append(cardElement(foundations[i][foundations[i].length - 1], 'foundation', i, foundations[i].length - 1));
+				else pile.append(emptyElement(`Empty ${suits[i]} foundation`, () => { if (selection) trySolitaireMove('foundation', i); }));
+				if (!foundations[i].length) pile.lastChild.addEventListener('dblclick', event => event.stopPropagation());
+				pile.addEventListener('click', () => { if (selection) trySolitaireMove('foundation', i); });
+				top.append(pile);
+			}
+			board.append(top);
+
+			for (let column = 0; column < 7; column++) {
+				const pile = document.createElement('div');
+				pile.className = 'sol-tableau';
+				pile.addEventListener('click', () => { if (selection) trySolitaireMove('tableau', column); });
+				if (!tableau[column].length) pile.append(emptyElement('Empty tableau column', () => { if (selection) trySolitaireMove('tableau', column); }));
+				else tableau[column].forEach((card, row) => pile.append(cardElement(card, 'tableau', column, row)));
+				board.append(pile);
+			}
+
+			for (let column = 0; column < 7; column++) {
+				const pile = tableau[column];
+				if (pile.length && !pile[pile.length - 1].faceUp) pile[pile.length - 1].faceUp = true;
+			}
+		}
+
+		solitaireWidget.querySelector('#solitaire-new').addEventListener('click', startSolitaire);
+		startSolitaire();
+
+		render();
+	</script>
+</body>
+</html>
